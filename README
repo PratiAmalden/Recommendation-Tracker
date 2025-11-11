@@ -1,0 +1,15 @@
+# Recommendation Tracker
+
+This project is a tracker app for managing recommendations. Users will be able to log in, view recommendations, and add new ones through the UI. We’ll be working together in a single repository with branches for structure and features.
+
+## Tech Stack
+
+- Backend: Node.js with a server framework
+- Frontend: React
+- Database: PostgreSQL
+
+## Team Tasks (first 2-3 days)
+
+- Login page: Prati
+- Database: Fatma
+- Add recommendation UI feature: AYK

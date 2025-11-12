@@ -7,28 +7,39 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    
+    <div className='container'>
+      <h1>Add New Recommendation</h1>
+      <form>
+        <label htmlFor='title'>Title</label>
+        <input type="text" placeholder='Enter Recommendation Title' name="title" required></input>
+
+        <label htmlFor='recommender'>Recommender</label>
+        <input type="text" placeholder='Enter the Recommender Name' name='recommender' required></input>
+
+        <label htmlFor='category'>Category</label>
+        <select name ='category'>
+          <option value="book">Book</option>
+          <option value = "TV">TV</option>
+          <option value="new">Add New</option>
+        </select>
+
+        <label htmlFor='mood'>Mood</label>
+        <select name ='mood'>
+          <option value="upbeat">Upbeat</option>
+          <option value ="throughtful">Throughtful</option>
+          <option value ="newmood">Add New</option>
+        </select>
+
+        <button type="submit" >Submit</button>
+
+  
+
+    </form>
+ 
+  </div>
+     
+    
   )
 }
 

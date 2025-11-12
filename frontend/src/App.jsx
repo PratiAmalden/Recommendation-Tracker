@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
@@ -9,7 +7,7 @@ function App() {
   return (
     
     <div className='container'>
-      <h1>Add New Recommendation</h1>
+      <h3>Add New Recommendation</h3>
       <form>
         <label htmlFor='title'>Title</label>
         <input type="text" placeholder='Enter Recommendation Title' name="title" required></input>

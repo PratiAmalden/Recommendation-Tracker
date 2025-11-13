@@ -50,7 +50,7 @@ function App() {
         </select>
 
         <label htmlFor='mood'>Mood</label>
-        <select name ='mood' onChange={handleChange}>
+        <select name ='mood' multiple onChange={handleChange}>
           <option value="upbeat">Upbeat</option>
           <option value ="throughtful">Throughtful</option>
           <option value ="newmood">Add New</option>

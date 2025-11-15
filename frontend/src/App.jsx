@@ -1,34 +1,70 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [formData, setFormData] = useState({
+    title : '',
+    recommender: '',
+    category : '',
+    mood:'' 
+
+  })
+
+  const handleChange = (e)=>{
+    setFormData({...formData,[e.target.name]:[e.target.value]})
+  };
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+
+    const response = fetch("http://localhost:3000",{
+      method: "POST",
+      header: {"Content-Type": "application/json"},
+      body: JSON.stringify(formData),
+    });
+
+    const result = response.json();
+    console.log(result);
+
+    alert("Form Submitted!")
+
+
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    
+    <div className='container'>
+      <h3>Add New Recommendation</h3>
+      <form onClick={handleSubmit}>
+        <label htmlFor='title'>Title</label>
+        <input type="text" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
+
+        <label htmlFor='recommender'>Recommender</label>
+        <input type="text" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange}></input>
+
+        <label htmlFor='category'>Category</label>
+        <select name ='category' onChange={handleChange}>
+          <option value="book">Book</option>
+          <option value = "TV">TV</option>
+          <option value="new">Add New</option>
+        </select>
+
+        <label htmlFor='mood'>Mood</label>
+        <select name ='mood' multiple onChange={handleChange}>
+          <option value="upbeat">Upbeat</option>
+          <option value ="throughtful">Throughtful</option>
+          <option value ="newmood">Add New</option>
+        </select>
+
+        <button type="submit" >Submit</button>
+
+  
+
+    </form>
+ 
+  </div>
+     
+    
   )
 }
 

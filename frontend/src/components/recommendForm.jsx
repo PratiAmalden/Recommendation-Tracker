@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
+import '../App.css';
 
 function RecommendationForm() {
   const [formData, setFormData] = useState({
@@ -59,21 +60,18 @@ function RecommendationForm() {
         alert("Error Submitting Form");
     }
 
-   
-
-
   }
 
   return (
     
     <div className='container'>
-      <h3>Add New Recommendation</h3>
+      <h3>Add Recommendation</h3>
       <form onSubmit={handleSubmit}>
         <label htmlFor='title'>Title</label>
-        <input type="text" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
+        <input type="text" id="title" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
 
         <label htmlFor='recommender'>Recommender</label>
-        <input type="text" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange}></input>
+        <input type="text" id="recommender" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange}></input>
 
         <CategorySelector
           label ="Category"

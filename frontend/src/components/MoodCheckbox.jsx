@@ -4,17 +4,19 @@ function MoodSelector({label,name,value,options,onChange})
 {
     return(
         <fieldset>
-            <legend>{label}</legend>
+            <legend className="mood-label">{label}</legend>
             {options.map ((opt,index) => (
-            <label key={index}>
+            <div className="mood-item" key ={index}>  
+            <label htmlFor="mood">{opt}: </label>
                 <input type="checkbox"
+                id ="mood"
                 name = {name}
                 value={opt} 
                 onChange={onChange}
                 checked = {value.includes(opt)}
-                />
-                {opt}:
-            </label>
+                ></input>
+            </div>
+            
 
             ))}
         </fieldset>

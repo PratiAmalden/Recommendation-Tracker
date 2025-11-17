@@ -14,18 +14,27 @@
 
 }
 
+.category-label {
+  display: inline-block;
+  align-items: center;
+  margin: 10px ;
+  
+}
+
 h3{
   color: rgb(53, 49, 62);
 }
 label{
   display: block;
   text-align: left;
+  color: rgb(53, 49, 62);
 }
 input {
   display: block;
-  border-radius: 7px;
+  border-radius: 6px;
   border: none;
   width: 100%;
+  padding: 8px 0px;
 }
 
 select{
@@ -40,7 +49,7 @@ button{
   border:none;
   border-radius: 4px;
   background-color: rgb(121, 123, 123);
-  color:whitesmoke;
+  color:rgb(44, 19, 19);
   width: 40%;
   margin: 15px;
 }

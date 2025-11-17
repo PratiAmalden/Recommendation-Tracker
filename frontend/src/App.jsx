@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import CategorySelector from './components/CatgoryDropdown';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -10,8 +11,11 @@ function App() {
 
   })
 
+  const categories = ["Movie","Book","TV show","Others"];
+
+
   const handleChange = (e)=>{
-    setFormData({...formData,[e.target.name]:[e.target.value]})
+    setFormData({...formData,[e.target.name]:e.target.value})
   };
 
   const handleSubmit = (e) =>{
@@ -19,7 +23,7 @@ function App() {
 
     const response = fetch("http://localhost:3000",{
       method: "POST",
-      header: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(formData),
     });
 
@@ -35,19 +39,22 @@ function App() {
     
     <div className='container'>
       <h3>Add New Recommendation</h3>
-      <form onClick={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <label htmlFor='title'>Title</label>
         <input type="text" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
 
         <label htmlFor='recommender'>Recommender</label>
         <input type="text" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange}></input>
 
-        <label htmlFor='category'>Category</label>
-        <select name ='category' onChange={handleChange}>
-          <option value="book">Book</option>
-          <option value = "TV">TV</option>
-          <option value="new">Add New</option>
-        </select>
+        <CategorySelector
+          label ="Category"
+          options={categories}
+          name = "category"
+          value = {formData.category}
+          onChange={handleChange} 
+        />
+
+      
 
         <label htmlFor='mood'>Mood</label>
         <select name ='mood' multiple onChange={handleChange}>

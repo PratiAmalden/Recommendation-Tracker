@@ -37,19 +37,29 @@ function RecommendationForm() {
     
   };
 
-  const handleSubmit = (e) =>{
+  const handleSubmit = async (e) =>{
     e.preventDefault();
 
-    const response = fetch("http://localhost:3000",{
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(formData),
-    });
+    try{
+        const response = await fetch("http://localhost:3000",{
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(formData),
+          });
+      
+          const result = await response.json();
+          console.log(result);
+      
+          alert("Form Submitted!")
 
-    const result = response.json();
-    console.log(result);
+    }
+    catch(err)
+    {
+        console.log(err);
+        alert("Error Submitting Form");
+    }
 
-    alert("Form Submitted!")
+   
 
 
   }

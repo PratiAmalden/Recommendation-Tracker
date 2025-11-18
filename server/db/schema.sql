@@ -20,8 +20,8 @@ CREATE TABLE moods (
 
 CREATE TABLE recommendations (
     id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    medium TEXT NOT NULL,
+    item_name TEXT NOT NULL,
+    category TEXT NOT NULL,
     recommender TEXT,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     status TEXT DEFAULT 'pending',

@@ -5,19 +5,23 @@ export default function Navbar(){
     const {user, logOut} = useAuth();
 
     return (
-        <nav>
-            <Link to="/">Home</Link>
-            
-            {user? (
-                <>
-                <Link to="/profile">Profile</Link>
-                <button onClick={logOut}>Log Out</button>
-                </>
-            ) : ( <>
-            <Link to="/login">Log in</Link>
-            <Link to="/signup">Sign up</Link>
+      <nav>
+        <div className="nav-left">
+          <Link to="/">Home</Link>
+        </div>
+        <div className="nav-right">
+          {user ? (
+            <>
+              <Link to="/profile">Profile</Link>
+              <button onClick={logOut}>Log Out</button>
             </>
-            )}
-        </nav>
-    )
+          ) : (
+            <>
+              <Link to="/login">Log in</Link>
+              <Link to="/signup">Sign up</Link>
+            </>
+          )}
+        </div>
+      </nav>
+    );
 }

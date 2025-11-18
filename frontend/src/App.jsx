@@ -13,16 +13,21 @@ import Navbar from "./components/Navbar";
 export default function app() {
   return (
     <AuthProvider>
-        <Router>
-          <Navbar />
+      <Router>
+        <Navbar />
+        <div className="app-container">
           <Routes>
-            <Route path="/" element={<p>Home page placeholder</p>} />
+            <Route
+              path="/"
+              element={<p className="page-content">Home page placeholder</p>}
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to={"/login"} replace />} />
           </Routes>
-        </Router>
+        </div>
+      </Router>
     </AuthProvider>
   );
 }

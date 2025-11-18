@@ -13,12 +13,12 @@ export default function SignupPage() {
     async function submit(e) {
         e.preventDefault();
         if (!form.username || !form.password) {
-        alert("Username and password are required");
-        return;
+          alert("Username and password are required");
+          return;
         }
         const ok = await signUp(form.username, form.password);
         if (ok) {
-            navigate("/profile");
+          navigate("/profile");
         }
     }
 
@@ -27,38 +27,39 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="auth-page">
-        <h2>Sign up</h2>
-        <form onSubmit={submit}>
-            <div>
-            <label>
-                Username
+      <div className="auth-page">
+        <div className="auth-card">
+            <h2>Sign up</h2>
+            <p className="subtitle">Create a new account</p>
+            <form onSubmit={submit}>
+              <div className="form-field">
+                <label htmlFor="username">Username</label>
                 <input
-                name="username"
-                placeholder="Enter username"
-                value={form.username}
-                type="text"
-                onChange={onChange}
+                  id="username"
+                  name="username"
+                  placeholder="Enter username"
+                  type="text"
+                  value={form.username}
+                  onChange={onChange}
                 />
-            </label>
-            </div>
-            <div>
-            <label>
-                Password
+              </div>
+              <div className="form-field">
+                <label htmlFor="password">Password</label>
                 <input
-                name="password"
-                placeholder="password"
-                value={form.password}
-                onChange={onChange}
-                type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  type="password"
+                  value={form.password}
+                  onChange={onChange}
                 />
-            </label>
-            </div>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <button className="login-submit" type="submit">
-            {isLoading ? "Creating..." : "Create account"}
-            </button>
-        </form>
+              </div>
+              {error && <p className="error-message">{error}</p>}
+              <button className="login-submit" type="submit" disabled={isLoading}>
+                {isLoading ? "Creating..." : "Create account"}
+              </button>
+            </form>
+          </div>
         </div>
-    );
+      );
 }

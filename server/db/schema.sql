@@ -35,3 +35,14 @@ CREATE TABLE recommendation_moods (
     mood_id INTEGER REFERENCES moods(id) ON DELETE CASCADE NOT NULL,
     PRIMARY KEY (recommendation_id, mood_id)
 );
+
+
+-- --- TEST DATA ---
+-- Insert a test user
+INSERT INTO users (username, password) VALUES ('test', 'password123') ON CONFLICT (username) DO NOTHING;
+
+-- Insert some test moods
+INSERT INTO moods (name) VALUES ('Happy') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Sad') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Excited') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Calm') ON CONFLICT (name) DO NOTHING;

@@ -71,7 +71,7 @@ function RecommendationForm() {
     <div className='container'>
       <h3>Add Recommendation</h3>
       <form onSubmit={handleSubmit}>
-        <label htmlFor='title'>Title</label>
+        <label htmlFor='title'>Item Name</label>
         <input type="text" id="title" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
 
         <label htmlFor='recommender'>Recommender</label>

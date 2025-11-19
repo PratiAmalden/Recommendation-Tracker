@@ -8,12 +8,12 @@ function RecommendationForm() {
     title : '',
     recommender: '',
     category : '',
-    mood:'' 
+    mood:[] 
 
-  })
+  });
 
   const categories = ["Movie","Book","TV show","Others"];
-  const moods = ["Inspiring","Thoughtful","Funny","Thrilling"]
+  const moods = [{id:1,label:"Inspiring"},{id:2,label:"Thoughtful"},{id:3,label:"Funny"},{id:4,label:"Thrilling"}];
 
 
   const handleChange = (e)=>{
@@ -24,10 +24,14 @@ function RecommendationForm() {
 
     if(type ==="checkbox")
     {
+      const id = Number(value);
         setFormData((pre) =>{
+          
           return checked
-          ? {...pre,[name]: [...pre[name],value]}
-          : {...pre,[name]: pre[name].filter((v) => v !== value)};
+          ? {...pre,mood: [...pre[name],id]}
+          : {...pre,mood: pre[name].filter((v) => v !== id)};
+
+  
         })
     }
     else{

@@ -1,12 +1,34 @@
 import { useState } from 'react'
 import './App.css'
-import CategorySelector from './components/CatgoryDropdown';
-import MoodSelector from './components/MoodCheckbox';
 import RecommendationForm from './components/recommendForm';
+import ListCard from './components/ListUI';
+
+const items = [
+  {
+    title: "The Office",
+    category: "Comedy",
+    mood: ["Funny", "Light"],
+    recommender: "John",
+  },
+  {
+    title: "Breaking Bad",
+    category: "Drama",
+    mood: ["Serious", "Thrilling"],
+    recommender: "Alex",
+  },
+];
+
 
 function App() {
   return(
-  <RecommendationForm />
+    <>
+    <section >
+      <ListCard items ={items}></ListCard>
+    </section>
+    <section>
+      <RecommendationForm />
+    </section>
+    </>
   )
 }
 

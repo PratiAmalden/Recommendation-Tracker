@@ -7,23 +7,43 @@ export default function SignupPage() {
         username: "",
         password: "",
     });
-    const { signUp, error, isLoading } = useAuth();
+    const { signUp } = useAuth();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState(null);
+
     const navigate = useNavigate();
 
     async function submit(e) {
         e.preventDefault();
-        if (!form.username || !form.password) {
-          alert("Username and password are required");
-          return;
-        }
-        const ok = await signUp(form.username, form.password);
-        if (ok) {
-          navigate("/profile");
+        try {
+          setError(null);
+          setIsSubmitting(true);
+
+          const username = form.username.trim();
+          const password = form.password;
+
+          if (!username || !password) {
+            setError("Username and password are required");
+            return;
+          }
+
+          await signUp(username, password);
+
+          navigate("/");
+        } catch (err) {
+          if (err instanceof Error && err.message) {
+            setError(err.message);
+          } else {
+            setError("Something went wrong");
+          }
+        } finally {
+          setIsSubmitting(false);
         }
     }
 
     const onChange = (e) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        setError(null);
     };
 
     return (
@@ -55,8 +75,8 @@ export default function SignupPage() {
                 />
               </div>
               {error && <p className="error-message">{error}</p>}
-              <button className="login-submit" type="submit" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create account"}
+              <button className="login-submit" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create account"}
               </button>
             </form>
           </div>

@@ -4,25 +4,43 @@ import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
-  const { login, error, isLoading } = useAuth();
+  const { login } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null);
+  
   const navigate = useNavigate();
 
   const onChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
   async function submit(e) {
     e.preventDefault();
-    if(!form.username || !form.password){
-      alert("Username and password are required");
-      return;
+    try{
+      setError(null);
+      setIsSubmitting(true);
+
+      const username = form.username.trim();
+      const password = form.password;
+
+      if(!username || !password){
+        setError("Username and password are required");
+        return;
+      }
+
+      await login(username, password);
+      navigate("/");
+    } catch (err) {
+      if (err instanceof Error && err.message) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong");
+      }
+    } finally{
+      setIsSubmitting(false);
     }
-    const ok = await login(form.username, form.password);
-    if(ok){
-      navigate("/profile");
-    }
-    
   }
 
   return (
@@ -53,9 +71,11 @@ export default function LoginPage() {
               onChange={onChange}
             />
           </div>
+
           {error && <p className="error-message">{error}</p>}
-          <button className="login-submit" type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Log in"}
+
+          <button className="login-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Log in"}
           </button>
         </form>
       </div>

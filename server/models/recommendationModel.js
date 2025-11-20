@@ -64,3 +64,53 @@ export async function createRecommendation(recommendationData) {
     }
   }
 }
+
+// Gets all recommendations for a specific user from the database
+export async function getRecommendationsByUserId(userId) {
+  let client;
+
+  try {
+    client = await pool.connect(); // Get a database client from the pool
+
+    // SQL Query: Select all recommendations for a specific user.
+    // We use LEFT JOIN to also get the moods for each recommendation.
+    // JSON_AGG collects all moods for a recommendation into a single JSON array.
+    const query = `
+      SELECT
+        r.id,
+        r.item_name,
+        r.category,
+        r.recommender,
+        r.user_id,
+        r.status,
+        r.created_at,
+        r.updated_at,
+        COALESCE(JSON_AGG(json_build_object('id', m.id, 'name', m.name)) FILTER (WHERE m.id IS NOT NULL), '[]') AS moods
+      FROM
+        recommendations r
+      LEFT JOIN
+        recommendation_moods rm ON r.id = rm.recommendation_id
+      LEFT JOIN
+        moods m ON rm.mood_id = m.id
+      WHERE
+        r.user_id = $1
+      GROUP BY
+        r.id, r.item_name, r.category, r.recommender, r.user_id, r.status, r.created_at, r.updated_at
+      ORDER BY
+        r.created_at DESC;
+    `;
+    // $1 will be replaced by the userId value
+    const result = await client.query(query, [userId]);
+    
+    return result.rows; // Return the fetched recommendations
+
+  } catch (error) {
+    console.error('Database error in getRecommendationsByUserId:', error);
+    throw error; // Re-throw the error for the calling function to handle
+  } finally {
+    if (client) {
+      client.release(); // Always release the client back to the pool
+    }
+  }
+  
+}

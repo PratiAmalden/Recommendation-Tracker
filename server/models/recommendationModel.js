@@ -49,6 +49,11 @@ export async function createRecommendation(recommendationData) {
     }
     console.error('Database transaction failed for createRecommendation:', error);
 
+    // Check for unique constraint violation error
+    if (error.code === '23505') {
+      throw new Error('A recommendation with the same item name and category already exists for this user.');
+    }
+
     // Re-throw the error so the calling function (route handler) can catch and respond
     throw error;
 

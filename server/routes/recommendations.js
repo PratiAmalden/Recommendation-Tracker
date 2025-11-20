@@ -35,7 +35,13 @@ router.post('/', async(req, res) => {
   } catch (error) {
 
     console.error('Error in POST /api/recommendations route handler:', error);
-  
+
+    if (error.message.includes('A recommendation with the same item name and category already exists')) {
+      return res.status(409).json({
+        success: false,
+        message: error.message,
+      });
+    }
       res.status(500).json({
         success: false,
         message: 'Failed to create recommendation.',

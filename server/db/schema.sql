@@ -26,7 +26,8 @@ CREATE TABLE recommendations (
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     status TEXT DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    UNIQUE (item_name, category, user_id)
 );
 
 -- Create RECOMMENDATION_MOODS junction table

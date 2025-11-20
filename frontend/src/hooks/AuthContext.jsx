@@ -86,7 +86,6 @@ export function AuthProvider({ children }){
       try {
         await fetch(`${API}/logout`, {
           method: "POST",
-          credentials: "include",
         });
       } catch (err) {
         console.error("Logout failed", err);

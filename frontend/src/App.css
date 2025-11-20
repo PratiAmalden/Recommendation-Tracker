@@ -5,38 +5,78 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.container{
+  background-color:rgb(190, 188, 188);
+  border-radius: 10px;
+  padding: 10px 20px;
+  width:100%;
+  box-shadow: 0 0 10px rgba(233, 162, 74, 0.1);
+
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.category-label {
+  display: inline-block;
+  align-items: center;
+  margin: 10px ;
+  
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+h3{
+  color: rgb(53, 49, 62);
+}
+label{
+  display: block;
+  text-align: left;
+  color: rgb(53, 49, 62);
+  font-weight:500
 }
 
-.card {
-  padding: 2em;
+.mood-label{
+  font-weight:bold;
+  color: rgb(53, 49, 62);
 }
 
-.read-the-docs {
-  color: #888;
+.mood-item{
+  display: flex;
+  align-items: center;
+
+
+}
+
+.mood-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0; 
+}
+
+.mood-item label {
+  min-width: 120px;   /* same width for all labels */
+  display: inline-block;
+}
+input {
+  display: block;
+  border-radius: 6px;
+  border: none;
+  width: 100%;
+  padding: 8px 0px;
+}
+
+select{
+  display: block;
+  border: none;
+  width: 100%;
+  border-radius: 7px;
+}
+
+
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius: 4px;
+  background-color: rgb(121, 123, 123);
+  color:rgb(44, 19, 19);
+  width: 40%;
+  margin: 15px;
 }

@@ -41,8 +41,15 @@ export default function SignupPage() {
         }
     }
 
+    const allowedNames = ["username", "password"];
+
     const onChange = (e) => {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        
+        if(!allowedNames.includes(name)){
+          return;
+        }
+        setForm((prev) => ({ ...prev, [name]: value }));
         setError(null);
     };
 

@@ -10,8 +10,15 @@ export default function LoginPage() {
   
   const navigate = useNavigate();
 
+  const allowedNames = ["username", "password"];
+
   const onChange = (e) => {
     const { name, value } = e.target;
+
+    if(!allowedNames.includes(name)){
+      return;
+    }
+
     setForm((prev) => ({ ...prev, [name]: value }));
     setError(null);
   };

@@ -1,6 +1,6 @@
 import { createContext, useContext ,useEffect, useState } from "react";
 
-const API = "http://localhost:3000"
+const API = "http://localhost:3000/api"
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }){
@@ -31,7 +31,7 @@ export function AuthProvider({ children }){
             }
 
             const data = await res.json();
-            setUser(data.user || data);
+            setUser(data.user);
         } catch (err){
             console.error("Auth check failed", err);
             localStorage.removeItem("token");
@@ -57,7 +57,7 @@ export function AuthProvider({ children }){
 
         const data = await res.json();
 
-        setUser(data.user || data);
+        setUser(data.user);
         setToken(data.token);
         localStorage.setItem("token", data.token);
     }
@@ -77,7 +77,7 @@ export function AuthProvider({ children }){
         }
 
         const data = await res.json();
-        setUser(data.user || data);
+        setUser(data.user);
         setToken(data.token);
         localStorage.setItem("token", data.token); 
     }

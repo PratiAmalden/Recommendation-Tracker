@@ -1,4 +1,4 @@
-import { Router, Router as router } from "express";
+import { Router } from "express";
 import bcrypt from "bcrypt";
 import { db } from "./db/db.js";
 import { createToken } from "../utils/createToken.js";

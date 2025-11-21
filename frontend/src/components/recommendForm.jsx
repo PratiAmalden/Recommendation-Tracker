@@ -5,7 +5,7 @@ import '../App.css';
 
 function RecommendationForm() {
   const [formData, setFormData] = useState({
-    title : '',
+    ItemName : '',
     recommender: '',
     category : '',
     mood:[] 
@@ -71,8 +71,8 @@ function RecommendationForm() {
     <div className='container'>
       <h3>Add Recommendation</h3>
       <form onSubmit={handleSubmit}>
-        <label htmlFor='title'>Item Name</label>
-        <input type="text" id="title" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
+        <label htmlFor='item-name'>Item Name</label>
+        <input type="text" id="item-name" placeholder='Enter Recommendation Title' name="title" required onChange={handleChange}></input>
 
         <label htmlFor='recommender'>Recommender</label>
         <input type="text" id="recommender" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange}></input>

@@ -1,5 +1,5 @@
 // Import the database pool to interact with the PostgreSQL database
-import pool from '../db/database.js';
+import db from '../db/db.js';
 
 // Adds a new recommendation to the database, including associated moods
 export async function createRecommendation(recommendationData) {
@@ -9,7 +9,7 @@ export async function createRecommendation(recommendationData) {
   
   try {
     // Get a client from the connection pool for transaction management
-    client = await pool.connect();
+    client = await db.connect();
     
     // Start a database transaction
     await client.query('BEGIN');

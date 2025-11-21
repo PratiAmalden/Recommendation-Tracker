@@ -4,7 +4,7 @@ dotenv.config(); // Load environment variables
 import { Pool } from "pg";
 
 // Create PostgreSQL connection pool
-const pool = new Pool({
+const db = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
@@ -15,7 +15,7 @@ const pool = new Pool({
 // Test database connection
 async function testDbConnection() {
   try {
-    const client = await pool.connect();
+    const client = await db.connect();
     console.log('Database connected successfully!');
     client.release(); // Release the client back to the pool
   } catch (err) {
@@ -27,4 +27,4 @@ async function testDbConnection() {
 
 testDbConnection(); // Call the test function immediately
 
-export default pool;
+export default db;

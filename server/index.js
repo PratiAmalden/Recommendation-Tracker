@@ -1,13 +1,26 @@
-import express from "express"
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
+dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-app.get("/", (res, req) => {
-    res.send("ok");
-})
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
-const port = 3000;
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("ok");
+});
+
+app.use("/api", authRoutes);
 
 app.listen(port, () => {
-    console.log("App listening on: ", port)
-})
+  console.log("App listening on: ", port);
+});

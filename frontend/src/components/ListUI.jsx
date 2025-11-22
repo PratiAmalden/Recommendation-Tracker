@@ -1,5 +1,5 @@
 import React from "react";
-
+import '../App.css';
 
 
 function ListCard({items}){
@@ -7,7 +7,7 @@ function ListCard({items}){
         <div className="card-list">
             {items.map( (item,index) => (
                 <div className="card" key={index}>
-                    <h3>{item.title}</h3>
+                    <h3 className="item-title">{item.title}</h3>
                     <p>Category: {item.category}</p>
                     <p>Mood: {item.mood.join(", ")}</p>
                     <p>Recommender: {item.recommender}</p>

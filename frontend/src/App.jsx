@@ -1,13 +1,35 @@
-import { useState } from 'react'
-import './App.css'
-import CategorySelector from './components/CatgoryDropdown';
-import MoodSelector from './components/MoodCheckbox';
 import RecommendationForm from './components/recommendForm';
+import { AuthProvider } from "./hooks/AuthContext";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
+import Profile from "./components/profile";
+import Navbar from "./components/Navbar";
 
-function App() {
-  return(
-  <RecommendationForm />
-  )
+export default function app() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <div className="app-container">
+          <Routes>
+            <Route
+              path="/"
+              element={<p className="page-content">Home page placeholder</p>}
+            />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to={"/login"} replace />} />
+            <Route path="/recommendationsForm" element={<RecommendationForm />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
-
-export default App

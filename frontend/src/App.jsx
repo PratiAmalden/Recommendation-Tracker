@@ -1,3 +1,4 @@
+import RecommendationForm from './components/recommendForm';
 import { AuthProvider } from "./hooks/AuthContext";
 import {
   BrowserRouter as Router,
@@ -25,6 +26,7 @@ export default function app() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to={"/login"} replace />} />
+            <Route path="/recommendationsForm" element={<RecommendationForm />} />
           </Routes>
         </div>
       </Router>

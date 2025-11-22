@@ -5,7 +5,7 @@ import '../App.css';
 
 function RecommendationForm() {
   const [formData, setFormData] = useState({
-    ItemName : '',
+    item_name : '',
     recommender: '',
     category : '',
     mood:[] 
@@ -45,6 +45,7 @@ function RecommendationForm() {
   const handleSubmit = async (e) =>{
     e.preventDefault();
 
+
     try{
         const response = await fetch("http://localhost:3000",{
             method: "POST",
@@ -54,8 +55,25 @@ function RecommendationForm() {
       
           const result = await response.json();
           console.log(result);
+
+          if(response.ok)
+          {
       
-          alert("Form Submitted!")
+          alert("Recommendation Submitted!")
+
+          // reset from after successful submission
+
+          setFormData(
+            {item_name:"",
+             recommender:"",
+             category:"",
+             moods:[]
+            }
+          );
+        }
+        else{
+          alert(`Error.${result.message} || "Fail to add recommendation."}`);
+        }
 
     }
     catch(err)

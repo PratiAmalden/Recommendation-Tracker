@@ -1,6 +1,6 @@
 import { createContext, useContext ,useEffect, useState } from "react";
 
-const API = "http://localhost:3000/api"
+const API = "http://localhost:3000/api/auth"
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }){
@@ -85,7 +85,10 @@ export function AuthProvider({ children }){
     async function logOut() {
       try {
         await fetch(`${API}/logout`, {
-          method: "POST",
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
       } catch (err) {
         console.error("Logout failed", err);

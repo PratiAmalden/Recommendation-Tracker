@@ -19,7 +19,7 @@ app.use(express.json());
 // Mount the recommendation routes under the '/api/recommendations' path
 app.use('/api/recommendations', recommendationsRouter);
 
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(port, () => {
   console.log("App listening on: ", port);

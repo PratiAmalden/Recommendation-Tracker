@@ -1,6 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { db } from "./db/db.js";
+import db from "../db/db.js";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -103,10 +103,6 @@ router.post("/signup", async (req, res) => {
 
 router.post("/logout", authMiddleware, (req, res) => {
   return res.status(200).json({ message: "Logged out" });
-});
-
-router.listen(port, () => {
-  console.log("App listening on: ", port);
 });
 
 export default router;

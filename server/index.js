@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
+import recommendationsRouter from './routes/recommendations.js';
 dotenv.config();
 
 const app = express();
@@ -15,9 +16,8 @@ app.use(
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("ok");
-});
+// Mount the recommendation routes under the '/api/recommendations' path
+app.use('/api/recommendations', recommendationsRouter);
 
 app.use("/api", authRoutes);
 

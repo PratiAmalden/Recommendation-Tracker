@@ -70,7 +70,7 @@ export async function getRecommendationsByUserId(userId) {
   let client;
 
   try {
-    client = await pool.connect(); // Get a database client from the pool
+    client = await db.connect(); // Get a database client from the pool
 
     // SQL Query: Select all recommendations for a specific user.
     // We use LEFT JOIN to also get the moods for each recommendation.

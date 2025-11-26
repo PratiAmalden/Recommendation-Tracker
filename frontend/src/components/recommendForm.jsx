@@ -4,6 +4,13 @@ import MoodSelector from './MoodCheckbox';
 import { useAuth } from '../hooks/AuthContext';
 
 function RecommendationForm() {
+
+  // adding success && error states
+
+  const [message,setMessage] = useState("");
+  const [error,setError] = useState("");
+
+  //adding form states
   const [formData, setFormData] = useState({
     item_name : '',
     recommender: '',
@@ -34,6 +41,12 @@ function RecommendationForm() {
   };
   const handleSubmit = async (e) =>{
     e.preventDefault();
+
+    //reset messages
+
+    setMessage("");
+    setError("");
+    
     
 
     try{
@@ -47,12 +60,12 @@ function RecommendationForm() {
           });
           const result = await response.json();
           console.log(result);
-          alert("Form Submitted!")
+          setMessage("Recommendation added Successfully!");
     }
     catch(err)
     {
         console.log(err);
-        alert("Error Submitting Form");
+        setError("Error submitting form. Please Try Again");
     }
   }
   return (
@@ -78,6 +91,9 @@ function RecommendationForm() {
         onChange={handleChange}
         />
         <button type="submit" >Submit</button>
+
+        {message && <p className='success-message'>{message}</p>}
+        {error && <p className='error-message'>{error}</p>}
     </form>
   </div>
   )

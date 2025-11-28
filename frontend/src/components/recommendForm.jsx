@@ -56,30 +56,80 @@ function RecommendationForm() {
     }
   }
   return (
-    <div className='container'>
-      <h3>Add Recommendation</h3>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor='item-name'>Item Name</label>
-        <input type="text" id="item-name" placeholder='Enter Recommendation Title' name="item_name" required onChange={handleChange} value={formData.item_name}></input>
-        <label htmlFor='recommender'>Recommender</label>
-        <input type="text" id="recommender" placeholder='Enter the Recommender Name' name='recommender' required onChange={handleChange} value={formData.recommender}></input>
-        <CategorySelector
-          label ="Category"
-          options={categories}
-          name = "category"
-          value = {formData.category}
-          onChange={handleChange} 
-        />
-        <MoodSelector
-        label="Moods"
-        name = "moods"
-        options={moods}
-        value = {formData.moods}
-        onChange={handleChange}
-        />
-        <button type="submit" >Submit</button>
-    </form>
-  </div>
-  )
+    <div className="min-h-[70vh] flex items-center justify-center">
+      <div className="card w-full max-w-2xl bg-neutral text-neutral-content shadow-2xl border border-primary">
+        <div className="card-body">
+          <h3 className="font-jersey text-3xl text-primary mb-4 tracking-[0.25em]">
+            Add Recommendation
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="form-control">
+              <label
+                htmlFor="item-name"
+                className="label text-sm font-semibold text-accent m-3"
+              >
+                Item Name
+              </label>
+              <input
+                type="text"
+                id="item-name"
+                placeholder="Enter recommendation title"
+                name="item_name"
+                required
+                onChange={handleChange}
+                value={formData.item_name}
+                className="input input-bordered bg-black/40 text-base-content border-primary focus:outline-none"
+              />
+            </div>
+
+            <div className="form-control">
+              <label
+                htmlFor="recommender"
+                className="label text-sm font-semibold text-accent m-3"
+              >
+                Recommender
+              </label>
+              <input
+                type="text"
+                id="recommender"
+                placeholder="Enter the recommender name"
+                name="recommender"
+                required
+                onChange={handleChange}
+                value={formData.recommender}
+                className="input input-bordered bg-black/40 text-base-content border-primary focus:outline-none"
+              />
+            </div>
+
+            <CategorySelector
+              label="Category"
+              options={categories}
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+            />
+
+            <MoodSelector
+              label="Moods"
+              name="moods"
+              options={moods}
+              value={formData.moods}
+              onChange={handleChange}
+            />
+
+            <div className="form-control mt-6">
+              <button
+                type="submit"
+                className="btn btn-primary font-jersey text-xl tracking-[0.15em]"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
-export default RecommendationForm
+
+export default RecommendationForm;

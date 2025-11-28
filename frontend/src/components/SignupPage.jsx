@@ -53,39 +53,65 @@ export default function SignupPage() {
         setError(null);
     };
 
-    return (
-      <div className="auth-page">
-        <div className="auth-card">
-            <h2>Sign up</h2>
-            <p className="subtitle">Create a new account</p>
-            <form onSubmit={submit}>
-              <div className="form-field">
-                <label htmlFor="username">Username</label>
-                <input
-                  id="username"
-                  name="username"
-                  placeholder="Enter username"
-                  type="text"
-                  value={form.username}
-                  onChange={onChange}
-                />
-              </div>
-              <div className="form-field">
-                <label htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  name="password"
-                  placeholder="Password"
-                  type="password"
-                  value={form.password}
-                  onChange={onChange}
-                />
-              </div>
-              {error && <p className="error-message">{error}</p>}
-              <button className="login-submit" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create account"}
-              </button>
-            </form>
+      return (
+        <div className="auth-page min-h-[70vh] flex items-center justify-center">
+          <div className="auth-card card w-full max-w-md bg-neutral text-neutral-content shadow-xl border border-primary">
+            <div className="card-body">
+              <h2 className="font-jersey text-3xl text-primary tracking-[0.2em]">
+                Sign up
+              </h2>
+              <p className="subtitle text-sm text-accent/80 mb-4">
+                Create a new account
+              </p>
+              <form onSubmit={submit} className="space-y-4">
+                <div className="form-field form-control">
+                  <label
+                    htmlFor="username"
+                    className="label text-sm font-semibold text-accent m-2"
+                  >
+                    Username
+                  </label>
+                  <input
+                    id="username"
+                    name="username"
+                    placeholder="Enter username"
+                    type="text"
+                    value={form.username}
+                    onChange={onChange}
+                    className="input input-bordered text-accent"
+                  />
+                </div>
+                <div className="form-field form-control">
+                  <label
+                    htmlFor="password"
+                    className="label text-sm font-semibold text-accent m-2"
+                  >
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    value={form.password}
+                    onChange={onChange}
+                    className="input input-bordered text-accent"
+                  />
+                </div>
+                {error && (
+                  <p className="error-message text-sm text-error mt-1">
+                    {error}
+                  </p>
+                )}
+                <button
+                  className="login-submit btn btn-primary w-full bg-primary border-primary text-black hover:bg-accent hover:border-accent font-jersey text-xl tracking-[0.15em] mt-4"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Creating..." : "Create account"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       );

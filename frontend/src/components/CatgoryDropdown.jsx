@@ -1,29 +1,31 @@
 import React from "react";
-import "../App.css";
 
-function CategorySelector({label,options,name,value,onChange}){
-    return(
-    <>
-    <label htmlFor="category">{label}: </label>
-        <select id="category" name={name} value={value} onChange={onChange} required> 
-            <option value="">Select A Category</option>
-            {options.map((opt,index) =>(
-            
-                <option key={index} value={opt}>
-                    {opt}
-                </option>
-                
-            ))}
-        </select>
-    </>
-
-    
-    )
+function CategorySelector({ label, options, name, value, onChange }) {
+  return (
+    <div className="form-control">
+      <label
+        htmlFor="category"
+        className="label text-sm font-semibold text-accent m-3"
+      >
+        {label}
+      </label>
+      <select
+        id="category"
+        name={name}
+        value={value}
+        onChange={onChange}
+        required
+        className="select select-bordered bg-black/70 border-primary focus:outline-none text-base-content"
+      >
+        <option value="">Select a category</option>
+        {options.map((opt, index) => (
+          <option key={index} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 }
-    
-
-
-
-
 
 export default CategorySelector;

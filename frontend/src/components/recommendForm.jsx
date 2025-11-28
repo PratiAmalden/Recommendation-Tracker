@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
 import { useAuth } from '../hooks/AuthContext';
@@ -9,6 +9,8 @@ function RecommendationForm() {
 
   const [message,setMessage] = useState("");
   const [error,setError] = useState("");
+// To store the list of moods fetched from the backend
+  const[moodOptions, setMoodOptions] = useState([]);
 
   //adding form states
   const [formData, setFormData] = useState({
@@ -18,9 +20,33 @@ function RecommendationForm() {
     moods:[]
   });
 
-  const { user } = useAuth();
+  const { user,token } = useAuth();
   const categories = ["Movie","Book","TV show","Others"];
-  const moods = [{id:1,label:"Happy"},{id:2,label:"Sad"},{id:3,label:"Excited"},{id:4,label:"Calm"}];
+  
+  // fetch mood list from the db
+
+  useEffect (()=>{
+    async function fetchMoods(){
+      try {
+        const res = await
+        fetch("http://localhost:3000/api/moods");
+        const data = await res.json();
+
+        if (data.success){
+          const formattedMoods = data.data.map(m => ({
+            id: m.id,
+            label:m.name
+          }));
+          setMoodOptions(formattedMoods);
+        }
+      } catch(err){
+        console.error("Failed to fetch moods",err);
+        setError("Could not load mood options");
+      }
+    }
+    fetchMoods();
+  },[]);
+
   const handleChange = (e)=>{
     const type = e.target.type;
     //const name = e.target.name;
@@ -52,15 +78,29 @@ function RecommendationForm() {
     try{
         const response = await fetch("http://localhost:3000/api/recommendations",{
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: {"Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify({
               ...formData,
               user_id: user.userId
             }),
           });
+
+          if(!response.ok){
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to add recommendation");
+          }
           const result = await response.json();
           console.log(result);
           setMessage("Recommendation added Successfully!");
+
+          setFormData({
+            item_name: '',
+            recommender:'',
+            category:'',
+            moods:[]
+          });
     }
     catch(err)
     {

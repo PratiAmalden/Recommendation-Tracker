@@ -1,5 +1,6 @@
 import express from 'express';
 import { createRecommendation, getRecommendationsByUserId } from '../models/recommendationModel.js';
+import { authMiddleware } from '../middleware/authMiddleware.js'; 
 
 const router = express.Router();
 
@@ -52,9 +53,9 @@ router.post('/', async(req, res) => {
 
 // GET /api/recommendations route
 // This route fetches all recommendations for a specific user.
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   // Get user_id from query parameters (e.g., /api/recommendations?user_id=1)
-  const { user_id } = req.query;
+  const user_id = req.user.userId;
 
   if (!user_id) {
     return res.status(400).json({

@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import './App.css'
 import RecommendationForm from './components/recommendForm';
-import ListCard from './components/ListUI';
+import { AuthProvider } from "./hooks/AuthContext";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
+import Profile from "./components/profile";
+import Navbar from "./components/Navbar";
 
-const items = [
-  {
-    title: "The Office",
-    category: "Comedy",
-    mood: ["Funny", "Light"],
-    recommender: "John",
-  },
-  {
-    title: "Breaking Bad",
-    category: "Drama",
-    mood: ["Serious", "Thrilling"],
-    recommender: "Alex",
-  },
-];
-
-
-function App() {
-  return(
-    <>
-    <section >
-      <ListCard items ={items}></ListCard>
-    </section>
-    <section>
-      <RecommendationForm />
-    </section>
-    </>
-  )
+export default function app() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <div className="app-container">
+          <Routes>
+            <Route
+              path="/"
+              element={<p className="page-content">Home page placeholder</p>}
+            />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to={"/login"} replace />} />
+            <Route path="/recommendationsForm" element={<RecommendationForm />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
-
-export default App

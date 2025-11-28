@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
   const { login } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
   const navigate = useNavigate();
@@ -51,40 +51,92 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <h2>Log in</h2>
-        <p className="subtitle">Access your account</p>
-        <form onSubmit={submit}>
-          <div className="form-field">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              name="username"
-              placeholder="Enter username"
-              type="text"
-              value={form.username}
-              onChange={onChange}
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              placeholder="Password"
-              type="password"
-              value={form.password}
-              onChange={onChange}
-            />
-          </div>
+    <div className="auth-page min-h-[70vh] flex items-center justify-center">
+      <div className="auth-card card w-full max-w-md bg-neutral text-neutral-accent shadow-xl border border-primary">
+        <div className="card-body">
+          <h2 className="font-jersey text-3xl text-primary tracking-[0.2em]">
+            Log in
+          </h2>
+          <p className="subtitle text-sm text-accent/80 mb-4">
+            Access your account
+          </p>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="form-field form-control">
+              <label
+                htmlFor="username"
+                className="label text-sm font-semibold text-accent m-2"
+              >
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={form.username}
+                onChange={onChange}
+                className="input input-bordered bg-black/40 text-accent"
+                required
+                placeholder="Username"
+                pattern="[A-Za-z][A-Za-z0-9\\-]*"
+                minLength={3}
+                maxLength={30}
+                title="Only letters, numbers or dash"
+              />
+              <p className="validator-hint text-xs text-accent/70 mt-1">
+                Must be 3 to 30 characters
+                <br />
+                containing only letters, numbers or dash
+              </p>
+            </div>
 
-          {error && <p className="error-message">{error}</p>}
+            <div className="form-field form-control">
+              <label
+                htmlFor="password"
+                className="label text-sm font-semibold text-accent m-2"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={form.password}
+                onChange={onChange}
+                className="input validator bg-black/40 text-accent"
+                required
+                placeholder="Password"
+                minLength={8}
+                pattern="(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+              />
+              <p className="validator-hint text-xs text-accent/70 mt-1">
+                Must be more than 8 characters, including
+                <br />
+                at least one number
+                <br />
+                at least one lowercase letter
+                <br />
+                at least one uppercase letter
+              </p>
+            </div>
 
-          <button className="login-submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Logging in..." : "Log in"}
-          </button>
-        </form>
+            {error && (
+              <div className="inline-grid *:[grid-area:1/1] mt-2">
+                <div className="status status-error animate-ping"></div>
+                <div className="status status-error"></div>
+                <p className="text-sm text-error mt-1">{error}</p>
+              </div>
+            )}
+
+            <button
+              className="login-submit btn btn-primary w-full bg-primary border-primary text-black hover:bg-accent hover:border-accent font-jersey text-xl tracking-[0.15em] mt-4"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Logging in..." : "Log in"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

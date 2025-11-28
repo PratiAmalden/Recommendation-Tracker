@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import recommendationsRouter from './routes/recommendations.js';
+import moodsRouter from './routes/moods.js';
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,8 @@ app.use(express.json());
 
 // Mount the recommendation routes under the '/api/recommendations' path
 app.use('/api/recommendations', recommendationsRouter);
+
+app.use('/api/moods', moodsRouter);
 
 app.use("/api/auth", authRoutes);
 

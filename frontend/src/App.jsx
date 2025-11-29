@@ -10,6 +10,7 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import Profile from "./components/profile";
 import Navbar from "./components/Navbar";
+import Home from './components/Home';
 
 export default function app() {
   return (
@@ -22,6 +23,7 @@ export default function app() {
               path="/"
               element={<p className="page-content">Home page placeholder</p>}
             />
+            <Route path ="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<Profile />} />

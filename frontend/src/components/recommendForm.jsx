@@ -165,7 +165,7 @@ function RecommendationForm() {
             <MoodSelector
               label="Moods"
               name="moods"
-              options={moods}
+              options={moodOptions}
               value={formData.moods}
               onChange={handleChange}
             />

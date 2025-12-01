@@ -65,17 +65,15 @@ export async function createRecommendation(recommendationData) {
   }
 }
 
-// Gets all recommendations for a specific user from the database
-export async function getRecommendationsByUserId(userId) {
+// Gets all recommendations for a user, optionally filtered by category, recommender, or mood.
+export async function getRecommendationsByUserId(userId, filters = {}) {
   let client;
 
   try {
     client = await db.connect(); // Get a database client from the pool
 
-    // SQL Query: Select all recommendations for a specific user.
-    // We use LEFT JOIN to also get the moods for each recommendation.
-    // JSON_AGG collects all moods for a recommendation into a single JSON array.
-    const query = `
+    // We select recommendations and join them with moods to get the full list of moods for each item.
+    let query = `
       SELECT
         r.id,
         r.item_name,
@@ -92,15 +90,51 @@ export async function getRecommendationsByUserId(userId) {
         recommendation_moods rm ON r.id = rm.recommendation_id
       LEFT JOIN
         moods m ON rm.mood_id = m.id
-      WHERE
-        r.user_id = $1
+    `;
+
+    // $1 will always be the userId
+    const values = [userId]; 
+    const conditions = ['r.user_id = $1']; 
+
+    // Filter by Category 
+    if (filters.category) {
+      conditions.push(`r.category = $${values.length + 1}`);
+      values.push(filters.category);
+    }
+
+    // Filter by Recommender
+    if (filters.recommender) {
+      conditions.push(`r.recommender = $${values.length + 1}`);
+      values.push(filters.recommender);
+    }
+
+    // Filter by Mood 
+    // We use a subquery (EXISTS) to check if the recommendation is associated with the specific mood ID.
+    // This ensures we filter the items correctly but still fetch ALL moods associated with that item for display.
+    if (filters.mood) {
+        conditions.push(`EXISTS (
+            SELECT 1 FROM recommendation_moods rm_filter 
+            WHERE rm_filter.recommendation_id = r.id 
+            AND rm_filter.mood_id = $${values.length + 1}
+        )`);
+        values.push(filters.mood); 
+    }
+
+    // Construct the final WHERE clause
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    // Grouping and Ordering
+    query += `
       GROUP BY
         r.id, r.item_name, r.category, r.recommender, r.user_id, r.status, r.created_at, r.updated_at
       ORDER BY
         r.created_at DESC;
     `;
+
     // $1 will be replaced by the userId value
-    const result = await client.query(query, [userId]);
+    const result = await client.query(query, values);
     
     return result.rows; // Return the fetched recommendations
 

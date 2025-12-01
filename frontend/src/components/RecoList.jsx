@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
+import RecommendationFilter from "./FilterDropdown";
 
 export default function RecommendationsList() {
   const { user, token } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters]= useState({
+    category:"",
+    mood:"",
+    recommender:""
+  });
 
   useEffect(() => {
     if (user && token) {
@@ -14,14 +20,20 @@ export default function RecommendationsList() {
       setItems([]);
       setLoading(false);
     }
-  }, [user, token]);
+  }, [user, token,filters]);
 
   async function load() {
       try {
         setError(null);
         setLoading(true);
 
-        const res = await fetch("http://localhost:3000/api/recommendations", {
+        const queryParams = new URLSearchParams();
+
+        if(filters.category) queryParams.append("category",filters.category);
+        if(filters.mood) queryParams.append("mood",filters.mood);
+        if(filters.recommender) queryParams.append("recommender", filters.recommender);
+
+        const res = await fetch("http://localhost:3000/api/recommendations?{queryParams.toString()}", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,11 +82,15 @@ export default function RecommendationsList() {
     );
   }
 
+
+
   return (
     <div className="min-h-[70vh]">
       <h1 className="font-jersey text-4xl text-primary tracking-[0.15em] mb-6">
         Your Recommendations
       </h1>
+
+      <RecommendationFilter filters={filters} setFilters ={setFilters} />
 
       {items.length === 0 ? (
         <p className="text-accent/70 text-lg">

@@ -13,6 +13,16 @@ export default function RecommendationsList() {
     recommender:""
   });
 
+  //reset filters when page load
+
+  useEffect(()=>{
+    setFilters({
+      category:"",
+      mood:"",
+      recommender:""
+    });
+  },[]);
+
   useEffect(() => {
     if (user && token) {
       load();
@@ -33,7 +43,7 @@ export default function RecommendationsList() {
         if(filters.mood) queryParams.append("mood",filters.mood);
         if(filters.recommender) queryParams.append("recommender", filters.recommender);
 
-        const res = await fetch("http://localhost:3000/api/recommendations?{queryParams.toString()}", {
+        const res = await fetch(`http://localhost:3000/api/recommendations?${queryParams.toString()}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +100,7 @@ export default function RecommendationsList() {
         Your Recommendations
       </h1>
 
-      <RecommendationFilter filters={filters} setFilters ={setFilters} />
+      <RecommendationFilter onFilterChange={(newfilters) => setFilters(newfilters)} />
 
       {items.length === 0 ? (
         <p className="text-accent/70 text-lg">

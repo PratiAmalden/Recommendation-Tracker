@@ -38,11 +38,7 @@ CREATE TABLE recommendation_moods (
 );
 
 
--- --- TEST DATA ---
--- Insert a test user
-INSERT INTO users (username, password) VALUES ('test', 'password123') ON CONFLICT (username) DO NOTHING;
-
--- Insert some test moods
+-- Insert moods
 INSERT INTO moods (name) VALUES ('Happy') ON CONFLICT (name) DO NOTHING;
 INSERT INTO moods (name) VALUES ('Sad') ON CONFLICT (name) DO NOTHING;
 INSERT INTO moods (name) VALUES ('Excited') ON CONFLICT (name) DO NOTHING;

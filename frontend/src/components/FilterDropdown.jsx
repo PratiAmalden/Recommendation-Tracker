@@ -28,8 +28,8 @@ export default function RecommendationFilter({onFilterChange}){
                     <option value="">All Categories</option>
                     <option value ="Book">Book</option>
                     <option value="Movie">Movie</option>
-                    <option value ="TV Show">TV Show</option>
-                    <option value="Other">Others</option>    
+                    <option value ="TV show">TV show</option>
+                    <option value="Others">Others</option>    
                 </select>
             </div>
 

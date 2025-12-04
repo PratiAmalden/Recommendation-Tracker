@@ -36,10 +36,20 @@ export async function createRecommendation(recommendationData) {
       }
     }
 
+    const moodsData = await client.query(
+      `SELECT m.id, m.name
+      FROM recommendation_moods rm
+      JOIN moods m ON m.id = rm.mood_id
+      WHERE rm.recommendation_id = $1`,
+      [newRecommendation.id]
+    )
     // If all database operations within the transaction are successful, commit the changes
     await client.query('COMMIT');
 
-    return newRecommendation;
+    return {
+      ...newRecommendation,
+      moods: moodsData.rows,
+    }
 
   } catch (error) {
 

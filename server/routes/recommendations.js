@@ -142,4 +142,32 @@ router.put('/:id', authMiddleware , async (req, res) => {
     client.release();
   }
 });
+
+
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const user_id = req.user.userId;
+  const { id } = req.params;
+  try{
+    await db.query("DELETE FROM recommendations WHERE id = $1 AND user_id = $2",
+    [id, user_id]);
+
+    await db.query(
+      'DELETE FROM recommendation_moods WHERE recommendation_id = $1',
+      [id]
+    )
+
+    res.status(200).json({
+      success: true,
+      message: 'Recommendation deleted',
+    });
+
+  } catch (err){
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch recommendations.',
+      error: err.message,
+    });
+  }
+});
+
 export default router;

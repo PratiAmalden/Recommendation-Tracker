@@ -20,7 +20,7 @@ function MoodSelector({ label, name, value, options, onChange }) {
               value={opt.id}
               onChange={onChange}
               checked={value.includes(opt.id)}
-              className="checkbox bg-base-content checked:border-orange-500 checked:bg-orange-400 checked:text-orange-800"
+              className="checkbox checkbox-sm bg-base-content border-orange-400  checked:border-orange-500 checked:bg-orange-400 checked:text-orange-800"
             />
             <span className="text-sm text-accent p-1">{opt.label}</span>
           </label>

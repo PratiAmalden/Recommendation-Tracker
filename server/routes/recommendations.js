@@ -124,9 +124,17 @@ router.put('/:id', authMiddleware , async (req, res) => {
       );
     }
 
+    const moodsData = await client.query(
+      `SELECT m.id, m.name
+       FROM recommendation_moods rm
+       JOIN moods m ON m.id = rm.mood_id
+       WHERE rm.recommendation_id = $1`,
+      [id]
+    );
+
     await client.query("COMMIT");
 
-    res.json({ ...newData.rows[0], moods })
+    res.json({ ...newData.rows[0], moods: moodsData.rows })
 
   } catch(error){
     await client.query("ROLLBACK");

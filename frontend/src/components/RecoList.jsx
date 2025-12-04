@@ -1,137 +1,147 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../hooks/AuthContext";
+import { useState } from "react";
+import CategorySelector from "./CatgoryDropdown";
+import MoodSelector from "./MoodCheckbox";
 
-export default function RecommendationsList() {
-  const { user, token } = useAuth();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function RecommendationsList({
+  rec,
+  onEdit,
+  moodOptions,
+  onDelete,
+  categories,
+}) {
 
-  useEffect(() => {
-    if (user && token) {
-      load();
-    } else {
-      setItems([]);
-      setLoading(false);
-    }
-  }, [user, token]);
+  const [editing, setEditing] = useState(false);
 
-  async function load() {
-      try {
-        setError(null);
-        setLoading(true);
+  const [form, setForm] = useState({
+    item_name: rec.item_name,
+    category: rec.category,
+    recommender: rec.recommender,
+    moods: rec.moods ? rec.moods.map((m) => m.id) : [],
+  });
 
-        const res = await fetch("http://localhost:3000/api/recommendations", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const updateField = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
-        if (!res.ok) {
-          throw new Error("Failed to load recommendations");
-        }
+  const handleMoodChange = (e) => {
+    const { value, checked } = e.target;
+    const id = Number(value);
 
-        const data = await res.json();
-
-        const list = Array.isArray(data.data) ? data.data : [];
-
-        setItems(list);
-      } catch (err) {
-        console.error(err.message)
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-  if (!user) {
-    return (
-      <div className="min-h-[60vh] flex justify-center items-center">
-        <p className="text-accent/80 text-lg">
-          You must be logged in to view your recommendations.
-        </p>
-      </div>
+    setForm((prev) =>
+      checked
+        ? { ...prev, moods: [...prev.moods, id] }
+        : { ...prev, moods: prev.moods.filter((v) => v !== id) }
     );
-  }
+  };
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex justify-center items-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-[60vh] flex justify-center items-center">
-        <p className="text-error text-lg">{error}</p>
-      </div>
-    );
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onEdit(rec.id, form);
+    setEditing(false);
+  };
 
   return (
-    <div className="min-h-[70vh]">
-      <h1 className="font-jersey text-4xl text-primary tracking-[0.15em] mb-6">
-        Your Recommendations
-      </h1>
+      <div className="card-body flex flex-col items-stretch text-center p-6 gap-3">
+        {editing ? (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 flex-1">
+            <input
+              className="input input-bordered bg-black/40 border-primary text-base-content"
+              value={form.item_name}
+              onChange={(e) => updateField("item_name", e.target.value)}
+              placeholder="Item name"
+            />
 
-      {items.length === 0 ? (
-        <p className="text-accent/70 text-lg">
-          You haven't added any recommendations yet.
-        </p>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((rec) => (
-            <div
-              key={rec.id}
-              className="card bg-neutral border border-primary shadow-xl"
-            >
-              <div className="card-body">
-                <h2 className="card-title text-primary font-jersey text-3xl">
-                  {rec.item_name}
-                </h2>
+            <input
+              className="input input-bordered bg-black/40 border-primary text-base-content"
+              value={form.recommender}
+              onChange={(e) => updateField("recommender", e.target.value)}
+              placeholder="Recommender"
+            />
 
-                <p className="text-accent text-sm">
-                  Category:{" "}
-                  <span className="text-base-content">
-                    {rec.category || "Uncategorized"}
-                  </span>
-                </p>
+            <CategorySelector
+              label="Category"
+              options={categories}
+              name="category"
+              value={form.category}
+              onChange={(e) => updateField("category", e.target.value)}
+            />
 
-                <p className="text-accent text-sm">
-                  Recommended by:{" "}
-                  <span className="text-base-content">
-                    {rec.recommender || "Unknown"}
-                  </span>
-                </p>
+            <MoodSelector
+              label="Moods"
+              name="moods"
+              options={moodOptions}
+              value={form.moods}
+              onChange={handleMoodChange}
+            />
 
-                {Array.isArray(rec.moods) && rec.moods.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-accent text-sm mb-1">Moods</p>
-                    <div className="flex flex-wrap gap-2">
-                      {rec.moods.map((m) => (
-                        <span
-                          key={m.id}
-                          className="badge badge-outline border-primary text-accent"
-                        >
-                          {m.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="card-actions justify-end mt-4">
-                  <button className="btn btn-outline border-primary text-accent hover:bg-primary hover:text-black font-jersey">
-                    View
-                  </button>
-                </div>
-              </div>
+            <div className="flex gap-2 justify-center mt-4">
+              <button className="btn btn-primary" type="submit">
+                Save
+              </button>
+              <button className="btn"
+                  type="button"
+                  onClick={() => {
+                    setEditing(false);
+                    setForm({
+                      item_name: rec.item_name,
+                      category: rec.category,
+                      recommender: rec.recommender,
+                      moods: rec.moods ? rec.moods.map(m => m.id) : []
+                    });
+                  }}>
+                Cancel
+              </button>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+          </form>
+        ) : (
+          <>
+            <div className="flex-1 flex flex-col items-center gap-2">
+              <h2 className="card-title text-primary font-jersey text-2xl line-clamp-2">
+                {rec.item_name}
+              </h2>
+
+              <p className="text-accent text-sm">
+                Category: 
+                <span className="text-base-content font-medium"> { rec.category  }</span>
+              </p>
+
+              <p className="text-accent text-sm">
+                Recommended by:
+                <span className="text-base-content font-medium">
+                  {rec.recommender}
+                </span>
+              </p>
+
+              {Array.isArray(rec.moods) && rec.moods.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-accent text-sm mb-2">Moods:</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {rec.moods.map((m) => (
+                      <span
+                        key={m.id}
+                        className="px-3 py-1 rounded-full border border-primary bg-black/40 text-base-content text-xs">
+                        {m.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-3 mt-4">
+              <button className="btn btn-primary btn-sm font-jersey"
+                onClick={() => setEditing(true)}>
+                Edit
+              </button>
+              <button
+                className="btn btn-error btn-sm font-jersey"
+                onClick={() => onDelete(rec.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </>
+        )}
+      </div>
   );
 }

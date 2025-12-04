@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
 
-const API = "http://localhost:3000/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
+const API = `${BASE_URL}/api`;
 
 export function useRecommendations() {
   const { user, token } = useAuth();

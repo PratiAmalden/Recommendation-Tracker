@@ -1,6 +1,7 @@
 import express from 'express';
 import { createRecommendation, getRecommendationsByUserId } from '../models/recommendationModel.js';
 import { authMiddleware } from '../middleware/authMiddleware.js'; 
+import db from '../db/db.js';
 
 const router = express.Router();
 
@@ -84,4 +85,61 @@ router.get('/', authMiddleware, async (req, res) => {
 
 });
 
+router.put('/:id', authMiddleware , async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.user.userId;
+  const { item_name, category, moods, recommender } = req.body;
+
+  const client = await db.connect();
+
+  try{
+    await client.query("BEGIN");
+
+    const newData = await client.query(
+      `UPDATE recommendations
+      SET 
+      item_name = $1,
+      category = $2,
+      recommender = $3,
+      updated_at = now()
+      WHERE id = $4 AND user_id = $5
+      RETURNING *`,
+      [item_name, category, recommender, id, user_id]
+    );
+
+    if (newData.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Recommendation not found" });
+    }
+
+    await client.query(
+      'DELETE FROM recommendation_moods WHERE recommendation_id = $1',
+      [id]
+    )
+
+    for(const moodId of moods){
+      await client.query(
+        'INSERT INTO recommendation_moods (recommendation_id, mood_id) VALUES ($1, $2)',
+        [id, moodId]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    res.json({ ...newData.rows[0], moods })
+
+  } catch(error){
+    await client.query("ROLLBACK");
+
+    console.error(error)
+
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to update recommendations.',
+      error: error.message
+    });
+  } finally{
+    client.release();
+  }
+});
 export default router;

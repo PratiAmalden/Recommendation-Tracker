@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import RecommendationFilter from "./FilterDropdown";
+import {useLocation} from "react-router-dom";
 
 export default function RecommendationsList() {
   const { user, token } = useAuth();
+
+  //listen to URL changes
+
+  const location = useLocation();
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters]= useState({
+
+  const initialFilters = {
     category:"",
     mood:"",
     recommender:""
-  });
+  };
+  const [filters, setFilters]= useState(initialFilters);
 
+useEffect(() => {
+  setFilters(initialFilters);
+},[location.key]);
 
 
   useEffect(() => {
@@ -95,7 +106,9 @@ export default function RecommendationsList() {
         Your Recommendations
       </h1>
 
-      <RecommendationFilter onFilterChange={(newfilters) => setFilters(newfilters)} />
+      <RecommendationFilter
+      filters = {filters}
+       onFilterChange={(newfilters) => setFilters(newfilters)} />
 
       {items.length === 0 ? (
         <p className="text-accent/70 text-lg">

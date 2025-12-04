@@ -1,10 +1,16 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
-export default function RecommendationFilter({onFilterChange}){
+export default function RecommendationFilter({filters,onFilterChange}){
 
     const [category,setCategory] = useState("");
     const [mood,setMood] = useState("");
     const [recommender,setRecommender] = useState("");
+
+    useEffect(() => {
+        setCategory(filters.category || "");
+        setMood(filters.mood || "");
+        setRecommender(filters.recommender || "");
+    },[filters]);
 
     //selected filters 
     const applyFilters = () => {

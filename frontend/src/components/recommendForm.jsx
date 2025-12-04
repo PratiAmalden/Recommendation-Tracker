@@ -3,6 +3,9 @@ import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
 import { useAuth } from '../hooks/AuthContext';
 
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL;
+
 function RecommendationForm() {
 
   // adding success && error states
@@ -29,7 +32,7 @@ function RecommendationForm() {
     async function fetchMoods(){
       try {
         const res = await
-        fetch("http://localhost:3000/api/moods");
+        fetch(`${API_URL}/api/moods`);
         const data = await res.json();
 
         if (data.success){
@@ -76,7 +79,7 @@ function RecommendationForm() {
     
 
     try{
-        const response = await fetch("http://localhost:3000/api/recommendations",{
+        const response = await fetch(`${API_URL}/api/recommendations`,{
             method: "POST",
             headers: {"Content-Type": "application/json",
               "Authorization": `Bearer ${token}`

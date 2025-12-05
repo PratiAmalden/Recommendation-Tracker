@@ -1,19 +1,8 @@
-import { useState, useEffect} from 'react'
+import { useState } from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
-import { useAuth } from '../hooks/AuthContext';
 
-// Get the API URL from environment variables
-const API_URL = import.meta.env.VITE_API_URL;
-
-function RecommendationForm() {
-
-  // adding success && error states
-
-  const [message,setMessage] = useState("");
-  const [error,setError] = useState("");
-// To store the list of moods fetched from the backend
-  const[moodOptions, setMoodOptions] = useState([]);
+function RecommendationForm({ onSubmit, moodOptions, categories }) {
 
   //adding form states
   const [formData, setFormData] = useState({
@@ -22,95 +11,34 @@ function RecommendationForm() {
     category : '',
     moods:[]
   });
-
-  const { user,token } = useAuth();
-  const categories = ["Movie","Book","TV show","Others"];
   
-  // fetch mood list from the db
+  const handleChange = (e) => {
+  const { type, name, value, checked } = e.target;
 
-  useEffect (()=>{
-    async function fetchMoods(){
-      try {
-        const res = await
-        fetch(`${API_URL}/api/moods`);
-        const data = await res.json();
-
-        if (data.success){
-          const formattedMoods = data.data.map(m => ({
-            id: m.id,
-            label:m.name
-          }));
-          setMoodOptions(formattedMoods);
-        }
-      } catch(err){
-        console.error("Failed to fetch moods",err);
-        setError("Could not load mood options");
-      }
-    }
-    fetchMoods();
-  },[]);
-
-  const handleChange = (e)=>{
-    const type = e.target.type;
-    //const name = e.target.name;
-    const value = e.target.value;
-    const checked = e.target.checked;
-    if(type ==="checkbox")
-    {
-      const id = Number(value);
-        setFormData((pre) =>{
-          return checked
-          ? {...pre,moods: [...pre.moods,id]}
-          : {...pre,moods: pre.moods.filter((v) => v !== id)};
-        })
-    }
-    else{
-    setFormData({...formData,[e.target.name]:e.target.value});
-    }
-  };
-  const handleSubmit = async (e) =>{
-    e.preventDefault();
-
-    //reset messages
-
-    setMessage("");
-    setError("");
-    
-    
-
-    try{
-        const response = await fetch(`${API_URL}/api/recommendations`,{
-            method: "POST",
-            headers: {"Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              ...formData,
-              user_id: user.userId
-            }),
-          });
-
-          if(!response.ok){
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to add recommendation");
-          }
-          const result = await response.json();
-          console.log(result);
-          setMessage("Recommendation added Successfully!");
-
-          setFormData({
-            item_name: '',
-            recommender:'',
-            category:'',
-            moods:[]
-          });
-    }
-    catch(err)
-    {
-        console.log(err);
-        setError("Error submitting form. Please Try Again");
-    }
+  if (type === "checkbox") {
+    const id = Number(value);
+    setFormData(prev =>
+      checked
+        ? { ...prev, moods: [...prev.moods, id] }
+        : { ...prev, moods: prev.moods.filter(v => v !== id) }
+    );
+  } else {
+    setFormData(prev => ({ ...prev, [name]: value }));
   }
+  };
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+    setFormData({
+      item_name: '',
+      recommender: '',
+      category: '',
+      moods: []
+    });
+  };
+
   return (
     <div className="min-h-[70vh] flex items-center justify-center">
       <div className="card w-full max-w-2xl bg-neutral text-neutral-content shadow-2xl border border-primary">

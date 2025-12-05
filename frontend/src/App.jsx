@@ -1,4 +1,3 @@
-import RecommendationForm from './components/recommendForm';
 import { AuthProvider } from "./hooks/AuthContext";
 import {
   BrowserRouter as Router,
@@ -10,7 +9,8 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import Profile from "./components/profile";
 import Navbar from "./components/Navbar";
-import RecommendationsList from "./components/RecoList";
+import RecommendationPage from './components/RecomendationPage'; 
+import AddRecommendationPage from './components/AddRecommendationPage';
 
 function HomePage() {
   return (
@@ -41,10 +41,10 @@ export default function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route
-                path="/recommendationsForm"
-                element={<RecommendationForm />}
+                path="/add-recommendation"
+                element={<AddRecommendationPage />}
               />
-              <Route path="/recommendations" element={<RecommendationsList />} />
+              <Route path="/recommendations" element={<RecommendationPage />} />
               <Route path="*" element={<Navigate to={"/login"} replace />} />
             </Routes>
           </div>

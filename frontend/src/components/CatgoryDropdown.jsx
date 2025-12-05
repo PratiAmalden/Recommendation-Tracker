@@ -15,7 +15,7 @@ function CategorySelector({ label, options, name, value, onChange }) {
         value={value}
         onChange={onChange}
         required
-        className="select select-bordered bg-black/70 border-primary focus:outline-none text-base-content"
+        className="select select-bordered border-primary focus:outline-none text-base-content"
       >
         <option value="">Select a category</option>
         {options.map((opt, index) => (

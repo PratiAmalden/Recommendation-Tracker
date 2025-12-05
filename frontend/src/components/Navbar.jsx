@@ -24,7 +24,7 @@ export default function Navbar(){
                 Profile
               </Link>
               <Link
-                to="/recommendationsForm"
+                to="/add-recommendation"
                 className="btn btn-outline border-primary text-accent hover:bg-primary hover:text-black font-jersey text-xl"
               >
                 Add Recommendation

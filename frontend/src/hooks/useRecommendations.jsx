@@ -1,18 +1,38 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
 
+import {useLocation} from "react-router-dom";
+import { useImperativeHandle } from "react";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 const API = `${BASE_URL}/api`;
 
 export function useRecommendations() {
   const { user, token } = useAuth();
+  const location = useLocation();
 
   const [items, setItems] = useState([]);
   const [moodOptions, setMoodOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [filters,setFilters] = useState({
+    category:"",
+    mood:"",
+    recommender:""
+  });
+
   const categories = ["Movie", "Book", "TV show", "Others"];
+
+  useEffect(()=>{
+    if(user && token){
+      loadRecommendations();
+    }
+    else{
+      setItems([]);
+      setLoading(false);
+    }
+  },[user,token,filters]);
 
   useEffect(() => {
     if (user && token) {
@@ -50,7 +70,15 @@ export function useRecommendations() {
       setError(null);
       setLoading(true);
 
-      const res = await fetch(`${API}/recommendations`, {
+      const queryParams = new URLSearchParams();
+
+      if (filters.category) queryParams.append("category", filters.category);
+      if (filters.mood) queryParams.append("mood", filters.mood);
+      if (filters.recommender) queryParams.append("recommender", filters.recommender);
+
+      
+
+      const res = await fetch(`${API}/recommendations?${queryParams.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,5 +174,7 @@ export function useRecommendations() {
     editRecommendation,
     deleteRecommendation,
     reload: loadRecommendations,
+    filters,
+    setFilters
   };
 }

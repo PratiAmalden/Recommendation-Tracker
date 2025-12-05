@@ -1,4 +1,5 @@
 import RecommendationsList from "./RecoList";
+import RecommendationFilter from "./FilterDropdown";
 import { useRecommendations } from "../hooks/useRecommendations";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +13,8 @@ export default function RecommendationPage() {
     categories,
     editRecommendation,
     deleteRecommendation,
+    filters,
+    setFilters
   } = useRecommendations();
 
   const navigate = useNavigate();
@@ -47,6 +50,13 @@ export default function RecommendationPage() {
       <h1 className="font-jersey text-4xl text-primary tracking-[0.15em] mb-6">
         Your Recommendations
       </h1>
+
+      <div className="mb-6">
+        <RecommendationFilter 
+           filters={filters} 
+           onFilterChange={setFilters} 
+        />
+      </div>
 
       {items.length === 0 && (
         <p className="text-accent/70 text-lg mb-6">

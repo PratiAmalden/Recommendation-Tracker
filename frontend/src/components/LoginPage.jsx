@@ -77,7 +77,7 @@ export default function LoginPage() {
                 className="input input-bordered bg-black/40 text-accent"
                 required
                 placeholder="Username"
-                pattern="[A-Za-z][A-Za-z0-9\\-]*"
+                pattern="[A-Za-z][A-Za-z0-9\-]*"
                 minLength={3}
                 maxLength={30}
                 title="Only letters, numbers or dash"
@@ -106,7 +106,7 @@ export default function LoginPage() {
                 required
                 placeholder="Password"
                 minLength={8}
-                pattern="(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               />
               <p className="validator-hint text-xs text-accent/70 mt-1">

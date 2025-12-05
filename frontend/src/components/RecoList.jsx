@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
 
+// Get the API URL from environment variables
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function RecommendationsList() {
   const { user, token } = useAuth();
   const [items, setItems] = useState([]);
@@ -21,7 +24,7 @@ export default function RecommendationsList() {
         setError(null);
         setLoading(true);
 
-        const res = await fetch("http://localhost:3000/api/recommendations", {
+        const res = await fetch(`${API_URL}/api/recommendations`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

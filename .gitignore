@@ -1,3 +1,9 @@
 node_modules
 .DS_Store
 .env
+
+# exclude everything
+server/uploads/*
+
+# exception to the rule
+!server/uploads/.gitkeep 

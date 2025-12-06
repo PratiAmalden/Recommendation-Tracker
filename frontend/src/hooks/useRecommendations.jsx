@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
-import {useLocaiton} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 
 
@@ -11,7 +11,7 @@ const API = `${BASE_URL}/api`;
 export function useRecommendations() {
   const { user, token } = useAuth();
  
- const location = useLocaiton();
+ const location = useLocation();
   const [items, setItems] = useState([]);
   const [moodOptions, setMoodOptions] = useState([]);
   const [loading, setLoading] = useState(true);

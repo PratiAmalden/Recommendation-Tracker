@@ -1,6 +1,7 @@
 import express from 'express';
 import { createRecommendation, getRecommendationsByUserId } from '../models/recommendationModel.js';
 import { authMiddleware } from '../middleware/authMiddleware.js'; 
+import db from '../db/db.js';
 
 const router = express.Router();
 
@@ -54,28 +55,19 @@ router.post('/', async(req, res) => {
 // GET /api/recommendations route
 // This route fetches all recommendations for a specific user.
 router.get('/', authMiddleware, async (req, res) => {
-  // Get user_id from query parameters (e.g., /api/recommendations?user_id=1)
+  // Get the logged-in user's ID from the token
   const user_id = req.user.userId;
 
-  if (!user_id) {
-    return res.status(400).json({
-      success: false,
-      message: 'User ID is required as a query parameter (e.g., ?user_id=1).',
-    });
-  }
-
-  // Validate user_id is a valid number
-  const parsedUserId = parseInt(user_id);
-  if (isNaN(parsedUserId)) {
-    return res.status(400).json({
-      success: false,
-      message: 'User ID must be a valid number.',
-    });
-  }
+  // Extract filter parameters from the URL query string
+  const { category, mood, recommender } = req.query;
 
   try {
     // Call the model function to get recommendations for the specified user
-    const recommendations = await getRecommendationsByUserId(parsedUserId);
+    const recommendations = await getRecommendationsByUserId(user_id, {
+      category,
+      mood,
+      recommender
+    });
 
     res.status(200).json({
       success: true,
@@ -91,6 +83,99 @@ router.get('/', authMiddleware, async (req, res) => {
     });
   }
 
+});
+
+router.put('/:id', authMiddleware , async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.user.userId;
+  const { item_name, category, moods, recommender } = req.body;
+
+  const client = await db.connect();
+
+  try{
+    await client.query("BEGIN");
+
+    const newData = await client.query(
+      `UPDATE recommendations
+      SET 
+      item_name = $1,
+      category = $2,
+      recommender = $3,
+      updated_at = now()
+      WHERE id = $4 AND user_id = $5
+      RETURNING *`,
+      [item_name, category, recommender, id, user_id]
+    );
+
+    if (newData.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Recommendation not found" });
+    }
+
+    await client.query(
+      'DELETE FROM recommendation_moods WHERE recommendation_id = $1',
+      [id]
+    )
+
+    for(const moodId of moods){
+      await client.query(
+        'INSERT INTO recommendation_moods (recommendation_id, mood_id) VALUES ($1, $2)',
+        [id, moodId]
+      );
+    }
+
+    const moodsData = await client.query(
+      `SELECT m.id, m.name
+       FROM recommendation_moods rm
+       JOIN moods m ON m.id = rm.mood_id
+       WHERE rm.recommendation_id = $1`,
+      [id]
+    );
+
+    await client.query("COMMIT");
+
+    res.json({ ...newData.rows[0], moods: moodsData.rows })
+
+  } catch(error){
+    await client.query("ROLLBACK");
+
+    console.error(error)
+
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to update recommendations.',
+      error: error.message
+    });
+  } finally{
+    client.release();
+  }
+});
+
+
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const user_id = req.user.userId;
+  const { id } = req.params;
+  try{
+    await db.query("DELETE FROM recommendations WHERE id = $1 AND user_id = $2",
+    [id, user_id]);
+
+    await db.query(
+      'DELETE FROM recommendation_moods WHERE recommendation_id = $1',
+      [id]
+    )
+
+    res.status(200).json({
+      success: true,
+      message: 'Recommendation deleted',
+    });
+
+  } catch (err){
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch recommendations.',
+      error: err.message,
+    });
+  }
 });
 
 export default router;

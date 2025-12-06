@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/AuthContext";
 
 export default function SignupPage() {
     const [form, setForm] = useState({
+        email:"",
         username: "",
         password: "",
     });
@@ -19,15 +20,17 @@ export default function SignupPage() {
           setError(null);
           setIsSubmitting(true);
 
+          const email = form.email.trim();
           const username = form.username.trim();
           const password = form.password;
+          
 
-          if (!username || !password) {
-            setError("Username and password are required");
+          if (!email || !username || !password) {
+            setError("Email,username and password are required");
             return;
           }
 
-          await signUp(username, password);
+          await signUp(email,username, password);
 
           navigate("/");
         } catch (err) {
@@ -41,7 +44,7 @@ export default function SignupPage() {
         }
     }
 
-    const allowedNames = ["username", "password"];
+    const allowedNames = ["email","username", "password"];
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -64,6 +67,23 @@ export default function SignupPage() {
                 Create a new account
               </p>
               <form onSubmit={submit} className="space-y-4">
+
+                <div className="form-field form-control">
+                  <label
+                  htmlFor="email"
+                  className="label text-sm font-semibold text-accent m-2 block">
+                    E-mail
+                  </label>
+                  <input
+                  id="email"
+                  name = "email"
+                  placeholder="Enter E-mail"
+                  type = "text" 
+                  value={form.email}
+                  onChange={onChange}
+                  className="input input-bordered text-accent"/>
+                </div>
+
                 <div className="form-field form-control">
                   <label
                     htmlFor="username"
@@ -98,6 +118,8 @@ export default function SignupPage() {
                     className="input input-bordered text-accent"
                   />
                 </div>
+
+            
                 {error && (
                   <p className="error-message text-sm text-error mt-1">
                     {error}

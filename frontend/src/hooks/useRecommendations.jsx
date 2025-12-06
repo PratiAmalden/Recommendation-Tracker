@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
+import {useLocaiton} from "react-router-dom";
 
-import {useLocation} from "react-router-dom";
-import { useImperativeHandle } from "react";
+
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 const API = `${BASE_URL}/api`;
 
 export function useRecommendations() {
   const { user, token } = useAuth();
-  const location = useLocation();
-
+ 
+ const location = useLocaiton();
   const [items, setItems] = useState([]);
   const [moodOptions, setMoodOptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,14 @@ export function useRecommendations() {
 
   const categories = ["Movie", "Book", "TV show", "Others"];
 
+  useEffect(()=> {
+    setFilters({
+      category:"",
+      mood:"",
+      recommender:""
+    });
+  },[location.key]);
+
   useEffect(()=>{
     if(user && token){
       loadRecommendations();
@@ -34,14 +43,7 @@ export function useRecommendations() {
     }
   },[user,token,filters]);
 
-  useEffect(() => {
-    if (user && token) {
-      loadRecommendations();
-    } else {
-      setItems([]);
-      setLoading(false);
-    }
-  }, [user, token]);
+
 
   useEffect(() => {
     fetchMoods();

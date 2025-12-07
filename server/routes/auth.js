@@ -61,7 +61,21 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, password } = req.body || {};
+    const { username, password,email } = req.body || {};
+
+    //check if email already exists
+
+    const existingEmail = await db.query(
+      "SELECT id FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (existingEmail.rows.length >0)
+    {
+      return res.status(409).json({
+        error: "The email address is already registered.",
+      });
+    }
 
     const existingUser = await db.query(
       "SELECT id FROM users WHERE username = $1",
@@ -79,8 +93,8 @@ router.post("/signup", async (req, res) => {
 
     // Insert the new user
     const newUser = await db.query(
-      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username, created_at",
-      [username, hash_password]
+      "INSERT INTO users (username, password,email) VALUES ($1, $2,$3) RETURNING id, username,email, created_at",
+      [username, hash_password,email]
     );
 
     const user = newUser.rows[0];
@@ -91,6 +105,7 @@ router.post("/signup", async (req, res) => {
       user: {
         userId: user.id,
         username: user.username,
+        email:user.email,
         created_at: user.created_at,
       },
       token,

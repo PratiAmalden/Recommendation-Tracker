@@ -2,10 +2,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthContext";
 
+//function for basic email validation
+
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 export default function SignupPage() {
     const [form, setForm] = useState({
+        
         username: "",
         password: "",
+        email:""
     });
     const { signUp } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,15 +28,23 @@ export default function SignupPage() {
           setError(null);
           setIsSubmitting(true);
 
+          
           const username = form.username.trim();
           const password = form.password;
+          const email = form.email.trim();
+          
 
-          if (!username || !password) {
-            setError("Username and password are required");
+          if (!username || !password || !email) {
+            setError("Email,username and password are required");
             return;
           }
 
-          await signUp(username, password);
+          if (!isValidEmail(email)){
+            setError("Please enter a valid email address");
+            return;
+          }
+
+          await signUp(username, password,email);
 
           navigate("/");
         } catch (err) {
@@ -41,7 +58,7 @@ export default function SignupPage() {
         }
     }
 
-    const allowedNames = ["username", "password"];
+    const allowedNames = ["username", "password","email"];
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -81,6 +98,7 @@ export default function SignupPage() {
                     className="input input-bordered text-accent"
                   />
                 </div>
+
                 <div className="form-field form-control">
                   <label
                     htmlFor="password"
@@ -98,6 +116,25 @@ export default function SignupPage() {
                     className="input input-bordered text-accent"
                   />
                 </div>
+
+                <div className="form-field form-control">
+                  <label
+                  htmlFor="email"
+                  className="label text-sm font-semibold text-accent m-2 block">
+                    E-mail
+                  </label>
+                  <input
+                  id="email"
+                  name = "email"
+                  placeholder="Enter E-mail"
+                  type = "email" 
+                  value={form.email}
+                  onChange={onChange}
+                  className="input input-bordered text-accent"
+                  title = "Please enter a valid email address"/>
+                </div>
+
+            
                 {error && (
                   <p className="error-message text-sm text-error mt-1">
                     {error}

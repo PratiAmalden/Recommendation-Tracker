@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import db from "../db/db.js";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { authSchema } from "../utils/validationSchemas.js";
+import { authSchema, loginSchema } from "../utils/validationSchemas.js";
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.get("/me", authMiddleware, (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const validation = authSchema.safeParse(req.body);
+  const validation = loginSchema.safeParse(req.body);
 
   if (!validation.success) {
     return res.status(400).json({ 
@@ -76,11 +76,25 @@ router.post("/signup", async (req, res) => {
     if (!validation.success) {
       return res.status(400).json({ 
         error: "Validation failed", 
-        details: validation.error.issues.map(i => i.message).join(", ") // Basit hata mesajı
+        details: validation.error.issues.map(i => i.message).join(", ")
       });
     }
+    
+    const { username, password, email } = validation.data;
 
-    const { username, password } = validation.data;
+    //check if email already exists
+
+    const existingEmail = await db.query(
+      "SELECT id FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (existingEmail.rows.length >0)
+    {
+      return res.status(409).json({
+        error: "The email address is already registered.",
+      });
+    }
 
     const existingUser = await db.query(
       "SELECT id FROM users WHERE username = $1",
@@ -98,8 +112,8 @@ router.post("/signup", async (req, res) => {
 
     // Insert the new user
     const newUser = await db.query(
-      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username, created_at",
-      [username, hash_password]
+      "INSERT INTO users (username, password,email) VALUES ($1, $2,$3) RETURNING id, username,email, created_at",
+      [username, hash_password,email]
     );
 
     const user = newUser.rows[0];
@@ -110,6 +124,7 @@ router.post("/signup", async (req, res) => {
       user: {
         userId: user.id,
         username: user.username,
+        email:user.email,
         created_at: user.created_at,
       },
       token,

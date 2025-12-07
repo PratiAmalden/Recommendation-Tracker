@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { authSchema } from "../utils/validationSchemas";
+import { loginSchema } from "../utils/validationSchemas";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -24,7 +24,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setError({});
 
-    const validationResult = authSchema.safeParse(form);
+    const validationResult = loginSchema.safeParse(form);
 
     if (!validationResult.success) {
       const fieldErrors = {};

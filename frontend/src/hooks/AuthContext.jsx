@@ -65,13 +65,13 @@ export function AuthProvider({ children }){
         localStorage.setItem("token", data.token);
     }
 
-    async function signUp(username, password){
+    async function signUp(username, password,email){
         const res = await fetch(`${API}/signup`, {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password,email }),
         });
 
         if(!res.ok){

@@ -7,6 +7,7 @@ export default function SignupPage() {
     const [form, setForm] = useState({
         username: "",
         password: "",
+        email: ""
     });
     const { signUp } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +45,7 @@ export default function SignupPage() {
         }
 
         try {
-          await signUp(form.username, form.password);
+          await signUp(form.username, form.password, form.email);
           navigate("/");
         } catch (err) {
           if (err instanceof Error && err.message) {
@@ -86,6 +87,7 @@ export default function SignupPage() {
                   />
                   {error.username && <p className="text-xs text-error mt-1">{error.username}</p>}
                 </div>
+
                 <div className="form-field form-control">
                   <label 
                     htmlFor="password"
@@ -104,6 +106,26 @@ export default function SignupPage() {
                   />
                   {error.password && <p className="text-xs text-error mt-1">{error.password}</p>}
                 </div>
+
+                <div className="form-field form-control">
+                  <label
+                  htmlFor="email"
+                  className="label text-sm font-semibold text-accent m-2 block">
+                    E-mail
+                  </label>
+                  <input
+                  id="email"
+                  name = "email"
+                  placeholder="Enter E-mail"
+                  type = "email" 
+                  value={form.email}
+                  onChange={onChange}
+                  className={`input input-bordered text-accent ${error.email ? "input-error border-error" : ""}`}
+                  title = "Please enter a valid email address"/>
+                  {error.email && <p className="text-xs text-error mt-1">{error.email}</p>}
+                </div>
+
+            
                 {error.root && (
                   <p className="error-message text-sm text-error mt-1 text-center font-bold">
                     {error.root}

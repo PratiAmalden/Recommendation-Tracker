@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -120,6 +120,15 @@ export default function LoginPage() {
               </p>
             </div>
 
+            <div className="flex justify-end">
+              <Link
+              to ="/forgot-password"
+              className="text-sm text-primary hover:underline">
+              Forgot Password?
+              </Link>
+
+            </div>
+
             {error && (
               <div className="inline-grid *:[grid-area:1/1] mt-2">
                 <div className="status status-error animate-ping"></div>
@@ -127,6 +136,8 @@ export default function LoginPage() {
                 <p className="text-sm text-error mt-1">{error}</p>
               </div>
             )}
+
+        
 
             <button
               className="login-submit btn btn-primary w-full bg-primary border-primary text-black hover:bg-accent hover:border-accent font-jersey text-xl tracking-[0.15em] mt-4"

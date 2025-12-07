@@ -1,49 +1,52 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { authSchema } from "../utils/validationSchemas";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
   const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
   
   const navigate = useNavigate();
 
-  const allowedNames = ["username", "password"];
-
   const onChange = (e) => {
     const { name, value } = e.target;
-
-    if(!allowedNames.includes(name)){
-      return;
-    }
-
     setForm((prev) => ({ ...prev, [name]: value }));
-    setError(null);
+    if (error[name]) {
+      setError((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
   async function submit(e) {
     e.preventDefault();
-    try{
-      setError(null);
-      setIsSubmitting(true);
+    setIsSubmitting(true);
+    setError({});
 
-      const username = form.username.trim();
-      const password = form.password;
+    const validationResult = authSchema.safeParse(form);
 
-      if(!username || !password){
-        setError("Username and password are required");
-        return;
+    if (!validationResult.success) {
+      const fieldErrors = {};
+      validationResult.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0];
+        if (!fieldErrors[fieldName]) {
+          fieldErrors[fieldName] = issue.message;
       }
+      });
+      setError(fieldErrors);
+      setIsSubmitting(false);
+      return;
+    }
 
-      await login(username, password);
+    try {
+      await login(form.username, form.password);
       navigate("/");
     } catch (err) {
       if (err instanceof Error && err.message) {
-        setError(err.message);
+        setError({ root: err.message });
       } else {
-        setError("Something went wrong");
+        setError({ root: "Something went wrong" });
       }
     } finally{
       setIsSubmitting(false);
@@ -62,8 +65,8 @@ export default function LoginPage() {
           </p>
           <form onSubmit={submit} className="space-y-4">
             <div className="form-field form-control">
-              <label
-                htmlFor="username"
+              <label 
+                htmlFor="username" 
                 className="label text-sm font-semibold text-accent m-2"
               >
                 Username
@@ -74,26 +77,17 @@ export default function LoginPage() {
                 type="text"
                 value={form.username}
                 onChange={onChange}
-                className="input input-bordered bg-black/40 text-accent"
-                required
+                className={`input input-bordered bg-black/40 text-accent ${error.username ? "input-error border-error" : ""}`}
                 placeholder="Username"
-                pattern="[A-Za-z][A-Za-z0-9\-]*"
-                minLength={3}
-                maxLength={30}
-                title="Only letters, numbers or dash"
               />
-              <p className="validator-hint text-xs text-accent/70 mt-1">
-                Must be 3 to 30 characters
-                <br />
-                containing only letters, numbers or dash
-              </p>
+              {error.username && <p className="text-xs text-error mt-1">{error.username}</p>}
             </div>
 
             <div className="form-field form-control">
               <label
                 htmlFor="password"
                 className="label text-sm font-semibold text-accent m-2"
-              >
+               >
                 Password
               </label>
               <input
@@ -102,29 +96,15 @@ export default function LoginPage() {
                 name="password"
                 value={form.password}
                 onChange={onChange}
-                className="input validator bg-black/40 text-accent"
-                required
+                className={`input input-bordered bg-black/40 text-accent ${error.password ? "input-error border-error" : ""}`}
                 placeholder="Password"
-                minLength={8}
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               />
-              <p className="validator-hint text-xs text-accent/70 mt-1">
-                Must be more than 8 characters, including
-                <br />
-                at least one number
-                <br />
-                at least one lowercase letter
-                <br />
-                at least one uppercase letter
-              </p>
+              {error.password && <p className="text-xs text-error mt-1">{error.password}</p>}
             </div>
 
-            {error && (
-              <div className="inline-grid *:[grid-area:1/1] mt-2">
-                <div className="status status-error animate-ping"></div>
-                <div className="status status-error"></div>
-                <p className="text-sm text-error mt-1">{error}</p>
+            {error.root && (
+              <div className="mt-2 text-center">
+                <p className="text-sm text-error font-bold">{error.root}</p>
               </div>
             )}
 

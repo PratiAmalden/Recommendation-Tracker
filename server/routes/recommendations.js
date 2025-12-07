@@ -2,20 +2,25 @@ import express from 'express';
 import { createRecommendation, getRecommendationsByUserId } from '../models/recommendationModel.js';
 import { authMiddleware } from '../middleware/authMiddleware.js'; 
 import db from '../db/db.js';
+import { recommendationSchema } from '../utils/validationSchemas.js'; 
 
 const router = express.Router();
 
 // POST /api/recommendations route
-router.post('/', async(req, res) => {
-  // Extract data from the request body
-  const { item_name, category, recommender, user_id, moods } = req.body;
+router.post('/', authMiddleware, async(req, res) => {
 
-  if (!item_name || !category || !user_id) {
+  const validation = recommendationSchema.safeParse(req.body);
+
+  if (!validation.success) {
     return res.status(400).json({
       success: false,
-      message: 'Item name, category, and user ID are required fields.',
+      message: 'Validation failed',
+      errors: validation.error.issues
     });
   }
+
+  const { item_name, category, recommender, moods } = validation.data;
+  const user_id = req.user.userId;
 
   try {
 
@@ -88,7 +93,17 @@ router.get('/', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware , async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.userId;
-  const { item_name, category, moods, recommender } = req.body;
+  const validation = recommendationSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: validation.error.issues
+    });
+  }
+
+  const { item_name, category, moods, recommender } = validation.data;
 
   const client = await db.connect();
 

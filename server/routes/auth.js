@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import db from "../db/db.js";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { authSchema, loginSchema } from "../utils/validationSchemas.js";
 
 const router = Router();
 
@@ -18,7 +19,16 @@ router.get("/me", authMiddleware, (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body || {};
+  const validation = loginSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({ 
+      error: "Validation failed", 
+      details: validation.error.issues 
+    });
+  }
+
+  const { username, password } = validation.data;
 
   try {
     // find user
@@ -61,7 +71,16 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, password,email } = req.body || {};
+    const validation = authSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({ 
+        error: "Validation failed", 
+        details: validation.error.issues.map(i => i.message).join(", ")
+      });
+    }
+    
+    const { username, password, email } = validation.data;
 
     //check if email already exists
 

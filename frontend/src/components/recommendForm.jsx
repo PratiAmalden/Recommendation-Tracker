@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
+import { recommendationSchema, zodToFieldErrors } from '../utils/validationSchemas'; 
 
 function RecommendationForm({ onSubmit, moodOptions, categories }) {
 
@@ -11,26 +12,46 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
     category : '',
     moods:[]
   });
-  
-  const handleChange = (e) => {
-  const { type, name, value, checked } = e.target;
 
-  if (type === "checkbox") {
-    const id = Number(value);
-    setFormData(prev =>
-      checked
-        ? { ...prev, moods: [...prev.moods, id] }
-        : { ...prev, moods: prev.moods.filter(v => v !== id) }
-    );
-  } else {
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }
+  const [error, setError] = useState({});
+
+  const handleChange = (e) => {
+    const { type, name, value, checked } = e.target;
+    
+    if (type === "checkbox") {
+      const id = Number(value);
+      setFormData(prev =>
+        checked
+          ? { ...prev, moods: [...prev.moods, id] }
+          : { ...prev, moods: prev.moods.filter(v => v !== id) }
+      );
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    if (error[name]) {
+      setError(prev => ({ ...prev, [name]: null }));
+    }
+
+    if(type === "checkbox" && error.moods) {
+      setError(prev => ({ ...prev, moods: null }));
+    }
   };
 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError({});
+
+    const validationResult = recommendationSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      setError(zodToFieldErrors(validationResult.error.issues));
+      return;
+    }
+    
     onSubmit(formData);
+    
     setFormData({
       item_name: '',
       recommender: '',
@@ -48,8 +69,8 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
-              <label
-                htmlFor="item-name"
+              <label 
+                htmlFor="item-name" 
                 className="label text-sm font-semibold text-accent m-3"
               >
                 Item Name
@@ -57,18 +78,18 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
               <input
                 type="text"
                 id="item-name"
-                placeholder="Enter recommendation title"
                 name="item_name"
-                required
+                placeholder="Enter recommendation title"
                 onChange={handleChange}
                 value={formData.item_name}
-                className="input input-bordered bg-black/40 text-base-content border-primary focus:outline-none"
+                className={`input input-bordered bg-black/40 text-base-content focus:outline-none ${error.item_name ? "input-error border-error" : "border-primary"}`}
               />
+              {error.item_name && <p className="text-xs text-error mt-1 ml-3">{error.item_name}</p>}
             </div>
 
             <div className="form-control">
-              <label
-                htmlFor="recommender"
+              <label 
+                htmlFor="recommender" 
                 className="label text-sm font-semibold text-accent m-3"
               >
                 Recommender
@@ -76,30 +97,36 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
               <input
                 type="text"
                 id="recommender"
-                placeholder="Enter the recommender name"
                 name="recommender"
-                required
+                placeholder="Enter the recommender name"
                 onChange={handleChange}
                 value={formData.recommender}
-                className="input input-bordered bg-black/40 text-base-content border-primary focus:outline-none"
+                className={`input input-bordered bg-black/40 text-base-content focus:outline-none ${error.recommender ? "input-error border-error" : "border-primary"}`}
               />
+               {error.recommender && <p className="text-xs text-error mt-1 ml-3">{error.recommender}</p>}
             </div>
 
-            <CategorySelector
-              label="Category"
-              options={categories}
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-            />
+            <div>
+              <CategorySelector
+                label="Category"
+                options={categories}
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+              />
+              {error.category && <p className="text-xs text-error mt-1 ml-3">{error.category}</p>}
+            </div>
 
-            <MoodSelector
-              label="Moods"
-              name="moods"
-              options={moodOptions}
-              value={formData.moods}
-              onChange={handleChange}
-            />
+            <div>
+              <MoodSelector
+                label="Moods"
+                name="moods"
+                options={moodOptions}
+                value={formData.moods}
+                onChange={handleChange}
+              />
+              {error.moods && <p className="text-xs text-error mt-1 ml-3">{error.moods}</p>}
+            </div>
 
             <div className="form-control mt-6">
               <button

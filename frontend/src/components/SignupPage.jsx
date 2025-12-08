@@ -1,76 +1,57 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthContext";
-
-//function for basic email validation
-
-const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+import { authSchema, zodToFieldErrors } from "../utils/validationSchemas"; 
 
 export default function SignupPage() {
     const [form, setForm] = useState({
-        
         username: "",
         password: "",
-        email:""
+        email: ""
     });
     const { signUp } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState({}); 
 
     const navigate = useNavigate();
 
+    const onChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        
+        if (error[name]) {
+             setError((prev) => ({ ...prev, [name]: null }));
+        }
+    };
+
     async function submit(e) {
         e.preventDefault();
+        setIsSubmitting(true);
+        setError({});
+
+        const validationResult = authSchema.safeParse(form);
+
+        if (!validationResult.success) {
+          setError(zodToFieldErrors(validationResult.error.issues));
+          setIsSubmitting(false);
+          return;
+        }
+
         try {
-          setError(null);
-          setIsSubmitting(true);
-
-          
-          const username = form.username.trim();
-          const password = form.password;
-          const email = form.email.trim();
-          
-
-          if (!username || !password || !email) {
-            setError("Email,username and password are required");
-            return;
-          }
-
-          if (!isValidEmail(email)){
-            setError("Please enter a valid email address");
-            return;
-          }
-
-          await signUp(username, password,email);
-
+          await signUp(form.username, form.password, form.email);
           navigate("/");
         } catch (err) {
           if (err instanceof Error && err.message) {
-            setError(err.message);
+            setError({ root: err.message });
           } else {
-            setError("Something went wrong");
+            setError({ root: "Something went wrong" });
           }
         } finally {
           setIsSubmitting(false);
         }
     }
 
-    const allowedNames = ["username", "password","email"];
-
-    const onChange = (e) => {
-        const { name, value } = e.target;
-        
-        if(!allowedNames.includes(name)){
-          return;
-        }
-        setForm((prev) => ({ ...prev, [name]: value }));
-        setError(null);
-    };
-
-      return (
+    return (
         <div className="auth-page min-h-[70vh] flex items-center justify-center">
           <div className="auth-card card w-full max-w-md bg-neutral text-neutral-content shadow-xl border border-primary">
             <div className="card-body">
@@ -82,8 +63,8 @@ export default function SignupPage() {
               </p>
               <form onSubmit={submit} className="space-y-4">
                 <div className="form-field form-control">
-                  <label
-                    htmlFor="username"
+                  <label 
+                    htmlFor="username" 
                     className="label text-sm font-semibold text-accent m-2"
                   >
                     Username
@@ -95,12 +76,13 @@ export default function SignupPage() {
                     type="text"
                     value={form.username}
                     onChange={onChange}
-                    className="input input-bordered text-accent"
+                    className={`input input-bordered text-accent ${error.username ? "input-error border-error" : ""}`}
                   />
+                  {error.username && <p className="text-xs text-error mt-1">{error.username}</p>}
                 </div>
 
                 <div className="form-field form-control">
-                  <label
+                  <label 
                     htmlFor="password"
                     className="label text-sm font-semibold text-accent m-2"
                   >
@@ -113,8 +95,9 @@ export default function SignupPage() {
                     type="password"
                     value={form.password}
                     onChange={onChange}
-                    className="input input-bordered text-accent"
+                    className={`input input-bordered text-accent ${error.password ? "input-error border-error" : ""}`}
                   />
+                  {error.password && <p className="text-xs text-error mt-1">{error.password}</p>}
                 </div>
 
                 <div className="form-field form-control">
@@ -130,14 +113,15 @@ export default function SignupPage() {
                   type = "email" 
                   value={form.email}
                   onChange={onChange}
-                  className="input input-bordered text-accent"
+                  className={`input input-bordered text-accent ${error.email ? "input-error border-error" : ""}`}
                   title = "Please enter a valid email address"/>
+                  {error.email && <p className="text-xs text-error mt-1">{error.email}</p>}
                 </div>
 
             
-                {error && (
-                  <p className="error-message text-sm text-error mt-1">
-                    {error}
+                {error.root && (
+                  <p className="error-message text-sm text-error mt-1 text-center font-bold">
+                    {error.root}
                   </p>
                 )}
                 <button

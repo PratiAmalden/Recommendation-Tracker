@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
-import { recommendationSchema } from '../utils/validationSchemas'; 
+import { recommendationSchema, zodToFieldErrors } from '../utils/validationSchemas'; 
 
 function RecommendationForm({ onSubmit, moodOptions, categories }) {
 
@@ -46,15 +46,8 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
     const validationResult = recommendationSchema.safeParse(formData);
 
     if (!validationResult.success) {
-        const fieldErrors = {};
-        validationResult.error.issues.forEach((issue) => {
-          const fieldName = issue.path[0];
-          if (!fieldErrors[fieldName]) {
-            fieldErrors[fieldName] = issue.message;
-        }
-        });
-        setError(fieldErrors);
-        return;
+      setError(zodToFieldErrors(validationResult.error.issues));
+      return;
     }
     
     onSubmit(formData);

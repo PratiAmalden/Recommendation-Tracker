@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { loginSchema } from "../utils/validationSchemas";
+import { loginSchema, zodToFieldErrors } from "../utils/validationSchemas";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -27,14 +27,7 @@ export default function LoginPage() {
     const validationResult = loginSchema.safeParse(form);
 
     if (!validationResult.success) {
-      const fieldErrors = {};
-      validationResult.error.issues.forEach((issue) => {
-        const fieldName = issue.path[0];
-        if (!fieldErrors[fieldName]) {
-          fieldErrors[fieldName] = issue.message;
-      }
-      });
-      setError(fieldErrors);
+      setError(zodToFieldErrors(validationResult.error.issues));
       setIsSubmitting(false);
       return;
     }

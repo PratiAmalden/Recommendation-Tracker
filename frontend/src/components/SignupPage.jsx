@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthContext";
-import { authSchema } from "../utils/validationSchemas"; 
+import { authSchema, zodToFieldErrors } from "../utils/validationSchemas"; 
 
 export default function SignupPage() {
     const [form, setForm] = useState({
@@ -32,16 +32,9 @@ export default function SignupPage() {
         const validationResult = authSchema.safeParse(form);
 
         if (!validationResult.success) {
-            const fieldErrors = {};
-            validationResult.error.issues.forEach((issue) => {
-              const fieldName = issue.path[0];
-              if (!fieldErrors[fieldName]) {
-                fieldErrors[fieldName] = issue.message;
-            }
-            });
-            setError(fieldErrors);
-            setIsSubmitting(false);
-            return;
+          setError(zodToFieldErrors(validationResult.error.issues));
+          setIsSubmitting(false);
+          return;
         }
 
         try {

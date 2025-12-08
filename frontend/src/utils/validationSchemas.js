@@ -3,6 +3,7 @@ import { z } from "zod";
 export const loginSchema = z.object({
   username: z
     .string()
+    .trim()
     .min(3, "Username must be at least 3 characters")
     .max(30, "Username must be less than 30 characters")
     .regex(/^[a-zA-Z0-9-]+$/, "Username can only contain letters, numbers, or dashes"),
@@ -18,6 +19,7 @@ export const loginSchema = z.object({
 export const authSchema = loginSchema.extend({
   email: z
     .string()
+    .trim()
     .email("Please enter a valid email address"),
 });
 
@@ -31,6 +33,7 @@ export const recommendationSchema = z.object({
 
   recommender: z
     .string()
+    .trim()
     .min(1, "Recommender name is required")
     .max(50, "Recommender name is too long (max 50 chars)"),
 
@@ -43,3 +46,14 @@ export const recommendationSchema = z.object({
     .array(z.number()) 
     .min(1, "Please select at least one mood"), 
 });
+
+export function zodToFieldErrors(issues) {
+  const fieldErrors = {};
+  issues.forEach((issue) => {
+    const fieldName = issue.path[0];
+    if (!fieldErrors[fieldName]) {
+      fieldErrors[fieldName] = issue.message;
+    }
+  });
+  return fieldErrors;
+}

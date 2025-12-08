@@ -20,7 +20,7 @@ export default function Profile() {
           <h1 className="card-title font-jersey text-3xl text-primary">
             Profile
           </h1>
-          <p className="text-base-content mt-2">
+          <p className="text-base text-base-content mt-2">
             Signed in as{" "}
             <strong className="text-accent">{user.username}</strong>
           </p>

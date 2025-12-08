@@ -40,7 +40,10 @@ CREATE TABLE recommendation_moods (
 
 
 -- Insert moods
-INSERT INTO moods (name) VALUES ('Happy') ON CONFLICT (name) DO NOTHING;
-INSERT INTO moods (name) VALUES ('Sad') ON CONFLICT (name) DO NOTHING;
-INSERT INTO moods (name) VALUES ('Excited') ON CONFLICT (name) DO NOTHING;
-INSERT INTO moods (name) VALUES ('Calm') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Upbeat') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Scary') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Thoughtful') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Inspiring') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Educational') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Self-Improvement') ON CONFLICT (name) DO NOTHING;
+INSERT INTO moods (name) VALUES ('Mind-Blowing') ON CONFLICT (name) DO NOTHING;

@@ -17,12 +17,36 @@ export default function ForgotPasswordPage(){
         setMessage("");
         setIsSubmitting(true);
 
-        const emailToValiate = email.trim();
+        if(!email.trim()){
+            setError("Please enter your registered email address.");
+            setIsSubmitting(false);
+            return;
+        }
 
-    }
+        try{
+            const res = await requestPasswordReset(email.trim());
+
+            if (!res.ok && res.status !== 404){
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error (errorData.error || "Failed to process request.");
+            }
+
+            setMessage("A password reset link has been sent.");
+            setEmail("");
+            
+        } catch(err){
+            setError(err.message || "An unexpected error occurred.");
+        } finally{
+            setIsSubmitting(false);
+        }
+        }
+
+    
 
     return(
         <div className="auth-page min-h-[70vh] flex items-center justify-center">
+            <div className="auth-card card w-full max-w-md bg-neutral text-neutral-content shadow-xl border border-primary">
+            <div className="card-body">
             <h2 className="font-jersey text-3xl text-primary tracking-[0.2em]">
                 Reset Password
             </h2>
@@ -41,13 +65,19 @@ export default function ForgotPasswordPage(){
                         placeholder="Enter Your E-mail"
                         type ="email"
                         value ={email}
-                        onChange={(e) => setEmail(e.target.value)}>
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="input input-bordered text-accent">
 
                     </input>
 
                 </div>
 
-                {/* put error in here from zod */}
+                {error && (
+                    <p className="error-message text-sm text-error mt-1">{error}</p>
+                )}
+                {message && (
+                    <p className="success-message text-sm text-success mt-1">{message}</p>
+                )}
 
                 <button className="btn btn-primary w-full bg-primary border-primary text-black hover:bg-accent hover:border-accent font-jersey text-xl tracking-[0.15em] mt-4"
                 type ="submit"
@@ -58,7 +88,10 @@ export default function ForgotPasswordPage(){
             </form>
 
         </div>
+      </div>  
+    </div>
+
         
-    )
+    );
 }
 

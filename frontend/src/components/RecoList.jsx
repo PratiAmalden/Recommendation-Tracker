@@ -96,6 +96,14 @@ export default function RecommendationsList({
         ) : (
           <>
             <div className="flex-1 flex flex-col items-center gap-2">
+              {rec.image_url && (
+                <img
+                  src={rec.image_url}
+                  alt={rec.item_name}
+                  className="w-full h-48 object-cover rounded-lg mb-3"
+                />
+              )}
+
               <h2 className="card-title text-primary font-jersey text-2xl line-clamp-2">
                 {rec.item_name}
               </h2>

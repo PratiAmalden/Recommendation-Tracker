@@ -299,7 +299,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     if(filename){
       const fullPath = path.join(__dirname, "..", "uploads", filename);
-      fs.unlink(fullPath);
+      fs.promises.unlink(fullPath);
     }
 
     res.status(200).json({

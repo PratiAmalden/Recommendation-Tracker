@@ -84,6 +84,13 @@ export function useRecommendations() {
       }
 
       const data = await res.json();
+      const rows = Array.isArray(data.data) ? data.data : []
+
+      const normalized = rows.map((r) => ({
+      ...r,
+      image_url: r.image_url ? `${BASE_URL}${r.image_url}` : null,
+      }));
+      setItems(normalized);
     } catch (err) {
       console.error(err.message);
       setError(err.message || "Something went wrong");

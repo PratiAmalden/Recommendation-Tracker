@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import {useLocation} from "react-router-dom";
 
-
-
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 const API = `${BASE_URL}/api`;
 
@@ -78,8 +75,6 @@ export function useRecommendations() {
       if (filters.mood) queryParams.append("mood", filters.mood);
       if (filters.recommender) queryParams.append("recommender", filters.recommender);
 
-      
-
       const res = await fetch(`${API}/recommendations?${queryParams.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -89,7 +84,6 @@ export function useRecommendations() {
       }
 
       const data = await res.json();
-      setItems(Array.isArray(data.data) ? data.data : []);
     } catch (err) {
       console.error(err.message);
       setError(err.message || "Something went wrong");
@@ -98,7 +92,7 @@ export function useRecommendations() {
     }
   }
 
-  async function addRecommendation(newRec) {
+  async function addRecommendation(recoData, imageFile) {
     setError(null);
 
     try {
@@ -108,7 +102,7 @@ export function useRecommendations() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...newRec, user_id: user.userId }),
+        body: JSON.stringify({ ...recoData, user_id: user.userId }),
       });
 
       if (!res.ok) {
@@ -119,7 +113,30 @@ export function useRecommendations() {
       const result = await res.json();
       const created = result.data || result;
 
+      if(imageFile){
+        const imgFormData = new FormData();
+        imgFormData.append("recoImg", imageFile);
+    
+        const imgRes = await fetch(`${API}/recommendations/${created.id}/image`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          body: imgFormData,
+        });
+
+        if(!imgRes) throw new Error("Failed to uplaod the image");
+
+        const imgData = await imgRes.json();
+        const url = imgData.image?.url || imgData.image?.file_path;
+
+        if(url) {
+          created.image_url = url;
+        }
+      }
+
       setItems((prev) => [created, ...prev]);
+      console.log(items)
       return created;
     } catch (err) {
       console.error(err.message);

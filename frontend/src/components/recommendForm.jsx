@@ -12,7 +12,7 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
     category : '',
     moods:[]
   });
-
+  const [ image, setImage ] = useState(null);
   const [error, setError] = useState({});
 
   const handleChange = (e) => {
@@ -25,6 +25,8 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
           ? { ...prev, moods: [...prev.moods, id] }
           : { ...prev, moods: prev.moods.filter(v => v !== id) }
       );
+    } else if(type === "file"){
+      setImage(e.target.files[0] || null);
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -50,7 +52,7 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
       return;
     }
     
-    onSubmit(formData);
+    onSubmit(formData, image);
     
     setFormData({
       item_name: '',
@@ -126,6 +128,21 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
                 onChange={handleChange}
               />
               {error.moods && <p className="text-xs text-error mt-1 ml-3">{error.moods}</p>}
+            </div>
+
+            <div>
+              <label 
+                htmlFor="recommender" 
+                className="label text-sm font-semibold text-accent m-3"
+              >
+                Add cover image
+              </label>       
+              <input
+              type="file"
+              accept="image/png, image/jpeg"
+              onChange={handleChange}
+              name="recoImg"
+              />
             </div>
 
             <div className="form-control mt-6">

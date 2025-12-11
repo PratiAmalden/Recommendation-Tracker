@@ -26,7 +26,17 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
           : { ...prev, moods: prev.moods.filter(v => v !== id) }
       );
     } else if(type === "file"){
-      setImage(e.target.files[0] || null);
+      const file = e.target.files[0] || null
+
+      if(file){
+        const maxSize = 100 * 1024;
+        if(file.size > maxSize){
+          setError(prev => ({...prev, recoImg: "Image must be under 100KB"}));
+          setImage(null);
+          return;
+        } 
+      }
+      setImage(file);
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -143,6 +153,9 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
               onChange={handleChange}
               name="recoImg"
               />
+              {error.recoImg && (
+                <p className="text-xs text-error mt-1 ml-3">{error.recoImg}</p>
+              )}
             </div>
 
             <div className="form-control mt-6">

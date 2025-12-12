@@ -43,8 +43,9 @@ const upload = multer({
   fileFilter,
 });
 
-router.post('/:recommendationId/image', upload.single('recoImg'), async (req, res) => {
-  const recommendationId = Number(req.params.recommendationId)
+router.post('/:id/image', upload.single('recoImg'), async (req, res) => {
+  const { id } = req.params;
+
   if(!req.file){
     return res.status(400).json({
     success: false,
@@ -61,7 +62,7 @@ router.post('/:recommendationId/image', upload.single('recoImg'), async (req, re
       `INSERT INTO images (recommendation_id, file_path, mime_type, file_size)
       VALUES ($1, $2, $3, $4)
       RETURNING id, file_path`,
-      [recommendationId, filePath, mimeType, fileSize]
+      [id, filePath, mimeType, fileSize]
     );
     
     const image = result.rows[0];
@@ -84,14 +85,14 @@ router.post('/:recommendationId/image', upload.single('recoImg'), async (req, re
 
 })
 
-router.get("/:recommendationId/image", async (req, res) => {
-  const recommendationId = Number(req.params.recommendationId);
+router.get("/:id/image", async (req, res) => {
+  const id = req.params;
 
   try{
     const result = await db.query(
     `SELECT id, file_path, mime_type, file_size
     FROM images
-    WHERE recommendation_id = $1`, [recommendationId]
+    WHERE recommendation_id = $1`, [id]
     );
 
     if(result.rows.length === 0) return res.status(400).json({
@@ -99,10 +100,14 @@ router.get("/:recommendationId/image", async (req, res) => {
       message: "Image not found"
     });
 
+    const image = result.rows[0]
     res.json({
       success: true,
       message: "image uploaded",
-      image: result.rows[0]
+      image: {
+        imgId: image.id,
+        url: image.file_path
+      }
     });
   } catch (err){
     console.error('Error fetching image', err);
@@ -282,7 +287,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     );
 
     const imgPath = img.rows[0]?.file_path;
-    const filename = path.basename(imgPath);
+    const filename = imgPath ? path.basename(imgPath) : null;
 
     await db.query("DELETE FROM recommendations WHERE id = $1 AND user_id = $2",
     [id, user_id]);
@@ -310,7 +315,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   } catch (err){
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch recommendations.',
+      message: 'Failed to delete the recommendation.',
       error: err.message,
     });
   }

@@ -23,6 +23,15 @@ export const authSchema = loginSchema.extend({
     .email("Please enter a valid email address"),
 });
 
+//schema for forgot password 
+
+export const emailSchema = z.object({
+  email:z
+  .string()
+  .trim()
+  .email("Please Enter a valid Email Address"),
+});
+
 const categoryOptions = ["Movie", "Book", "TV show", "Others"];
 
 export const recommendationSchema = z.object({

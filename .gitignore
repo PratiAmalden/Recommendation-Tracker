@@ -2,9 +2,8 @@ node_modules
 .DS_Store
 .env
 
-uploads/*.png
-uploads/*.jpg
-# do NOT ignore test.txt
+# exclude everything
+server/uploads/*
 
 # exception to the rule
 !server/uploads/.gitkeep 

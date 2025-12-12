@@ -19,6 +19,15 @@ app.get('/', (req, res) => {
   res.send('Recommendation Tracker API is up and running!');
 });
 
+app.get('/test-persistence', (req, res) => {
+  const testPath = path.join(__dirname, 'uploads', 'test.txt');
+  if (fs.existsSync(testPath)) {
+    return res.send('test.txt exists! Persistent storage is working.');
+  } else {
+    return res.send('test.txt NOT found. Volume mount may not be working.');
+  }
+});
+
 const port = process.env.PORT || 3000;
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";

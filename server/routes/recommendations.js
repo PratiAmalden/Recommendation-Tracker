@@ -116,6 +116,76 @@ router.get("/:id/image", async (req, res) => {
   
 })
 
+router.put('/:id/image', upload.single('recoImg'), async (req, res) => {
+  const { id } = req.params;
+  const newFile = req.file;
+
+  if(!newFile){
+    return res.status(400).json({
+    success: false,
+    message: "No file uploaded",
+    });
+  }
+
+  const newFilePath = `/uploads/${newFile?.filename}`;
+
+  try{
+    const img = await db.query(
+      "SELECT file_path FROM images WHERE recommendation_id = $1",
+      [id]
+    )
+
+    const oldImgPath = img.rows[0]?.file_path || null;
+
+    let result;
+    if(oldImgPath) {
+      result = await db.query(
+        `UPDATE images
+        SET file_path = $1,
+          mime_type = $2,
+          file_size = $3
+        WHERE recommendation_id = $4
+        RETURNING id, file_path`,
+        [newFilePath, newFile.mimetype, newFile.size , id]
+      );
+    } else {
+      result = await db.query(
+        `INSERT INTO images (recommendation_id, file_path, mime_type, file_size)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, file_path`,
+        [id, newFilePath, newFile.mimetype, newFile.size]
+      );
+    }
+
+    if(oldImgPath){
+      const oldFilename = path.basename(oldImgPath);
+      const oldPath = path.join(__dirname, "..", "uploads", oldFilename);
+      try {
+        await fs.promises.unlink(oldPath);
+      } catch (err) {
+        console.error(`Failed to delete file ${oldPath}`, err);
+      }
+    }
+
+    const newImg = result.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      message: "Image updated successfully",
+      image: {
+        imgId: newImg.id,
+        url: newImg.file_path,
+      }
+    });
+  } catch(err){
+    console.error('Error editing image', err);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+})
+
 // POST /api/recommendations route
 router.post('/', authMiddleware, async(req, res) => {
 

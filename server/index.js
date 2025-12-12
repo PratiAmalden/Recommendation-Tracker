@@ -6,6 +6,8 @@ import recommendationsRouter from './routes/recommendations.js';
 import moodsRouter from './routes/moods.js';
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from 'fs';
+
 
 dotenv.config();
 

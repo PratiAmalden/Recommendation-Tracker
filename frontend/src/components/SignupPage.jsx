@@ -72,11 +72,11 @@ export default function SignupPage() {
                   <input
                     id="username"
                     name="username"
-                    placeholder="Enter username"
+                    placeholder="Enter Username"
                     type="text"
                     value={form.username}
                     onChange={onChange}
-                    className={`input input-bordered text-accent ${error.username ? "input-error border-error" : ""}`}
+                    className={`input input-bordered w-full text-accent ${error.username ? "input-error border-error" : ""}`}
                   />
                   {error.username && <p className="text-xs text-error mt-1">{error.username}</p>}
                 </div>
@@ -91,11 +91,11 @@ export default function SignupPage() {
                   <input
                     id="password"
                     name="password"
-                    placeholder="Password"
+                    placeholder="Enter Password"
                     type="password"
                     value={form.password}
                     onChange={onChange}
-                    className={`input input-bordered text-accent ${error.password ? "input-error border-error" : ""}`}
+                    className={`input input-bordered w-full text-accent ${error.password ? "input-error border-error" : ""}`}
                   />
                   {error.password && <p className="text-xs text-error mt-1">{error.password}</p>}
                 </div>
@@ -113,7 +113,7 @@ export default function SignupPage() {
                   type = "email" 
                   value={form.email}
                   onChange={onChange}
-                  className={`input input-bordered text-accent ${error.email ? "input-error border-error" : ""}`}
+                  className={`input input-bordered w-full text-accent ${error.email ? "input-error border-error" : ""}`}
                   title = "Please enter a valid email address"/>
                   {error.email && <p className="text-xs text-error mt-1">{error.email}</p>}
                 </div>

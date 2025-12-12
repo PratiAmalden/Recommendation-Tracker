@@ -1,5 +1,6 @@
 import { useRecommendations } from '../hooks/useRecommendations';
 import RecommendationForm from './recommendForm';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddRecommendationPage() {
   const {
@@ -10,6 +11,16 @@ export default function AddRecommendationPage() {
     addRecommendation
   } = useRecommendations();
 
+  const navigate = useNavigate();
+
+  const handleAddSubmit = async (formData, image) => {
+    try {
+        await addRecommendation(formData, image);
+        navigate('/recommendations'); 
+    } catch (err) {
+        console.error("Failed to add rec:", err);
+    }
+  }
 
   if (!user) {
     return (
@@ -31,6 +42,6 @@ export default function AddRecommendationPage() {
   }
 
   return (
-    <RecommendationForm onSubmit={addRecommendation} moodOptions={moodOptions} categories={categories} />
+    <RecommendationForm onSubmit={handleAddSubmit} moodOptions={moodOptions} categories={categories} />
   )
 }

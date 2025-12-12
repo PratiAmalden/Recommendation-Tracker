@@ -71,8 +71,8 @@ export default function LoginPage() {
                 type="text"
                 value={form.username}
                 onChange={onChange}
-                className={`input input-bordered bg-black/40 text-accent ${error.username ? "input-error border-error" : ""}`}
-                placeholder="Username"
+                className={`input input-bordered w-full text-accent ${error.username ? "input-error border-error" : ""}`}
+                placeholder="Enter Username"
               />
               {error.username && <p className="text-xs text-error mt-1">{error.username}</p>}
             </div>
@@ -90,8 +90,8 @@ export default function LoginPage() {
                 name="password"
                 value={form.password}
                 onChange={onChange}
-                className={`input input-bordered bg-black/40 text-accent ${error.password ? "input-error border-error" : ""}`}
-                placeholder="Password"
+                className={`input input-bordered w-full text-accent ${error.password ? "input-error border-error" : ""}`}
+                placeholder="Enter Password"
               />
               {error.password && <p className="text-xs text-error mt-1">{error.password}</p>}
             </div>

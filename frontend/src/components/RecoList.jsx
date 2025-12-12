@@ -60,7 +60,7 @@ export default function RecommendationsList({
   };
 
   return (
-      <div className="card-body flex flex-col items-stretch text-center p-6 gap-3">
+      <div className="card-body p-6 flex flex-col h-full">
         {editing ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 flex-1">
             <input
@@ -124,54 +124,68 @@ export default function RecommendationsList({
           </form>
         ) : (
           <>
-            <div className="flex-1 flex flex-col items-center gap-2">
-              {rec.image_url && (
-                <img
-                  src={rec.image_url}
-                  alt={rec.item_name}
-                  className="w-full h-48 object-cover rounded-lg mb-3"
-                />
-              )}
+            <div className="flex flex-col items-center w-full mb-2">
+              <div className="w-full h-48 mb-3 overflow-hidden rounded-lg bg-black/20 border border-primary/20 flex items-center justify-center">
+                {rec.image_url ? (
+                    <img
+                      src={rec.image_url}
+                      alt={rec.item_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-accent/50">
+                      <span className="text-4xl mb-1">🦉</span> 
+                      <span className="text-xs font-jersey tracking-widest opacity-70">NO IMAGE</span>  
+                    </div>
+                )}
+              </div>
 
-              <h2 className="card-title text-primary font-jersey text-2xl line-clamp-2">
+              <h2 className="card-title text-primary font-jersey text-3xl line-clamp-2 text-center">
                 {rec.item_name}
               </h2>
+            </div>
+            
+            <div className="flex flex-col gap-3 w-full">
+              <div className="flex flex-col items-start">
+                <p className="text-accent text-base">
+                  Category: 
+                  <span className="text-base-content font-medium"> { rec.category  }</span>
+                </p>
+              </div>
 
-              <p className="text-accent text-sm">
-                Category: 
-                <span className="text-base-content font-medium"> { rec.category  }</span>
-              </p>
+              <div className="flex flex-col items-start">
+                <p className="text-accent text-base">
+                  Recommended by: 
+                  <span className="text-base-content font-medium ml-1">
+                    {rec.recommender}
+                  </span>
+                </p>
+              </div>
+            </div>
+         
 
-              <p className="text-accent text-sm">
-                Recommended by:
-                <span className="text-base-content font-medium">
-                  {rec.recommender}
-                </span>
-              </p>
-
+            <div className="mt-4 w-full flex-1">
+              <p className="text-accent text-base mb-2">Moods:</p>
               {Array.isArray(rec.moods) && rec.moods.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-accent text-sm mb-2">Moods:</p>
-                  <div className="flex flex-wrap justify-center gap-2">
+                  <div className="flex flex-wrap justify-start gap-2">
                     {rec.moods.map((m) => (
                       <span
                         key={m.id}
-                        className="px-3 py-1 rounded-full border border-primary bg-black/40 text-base-content text-xs">
+                        className="px-3 py-1 rounded-full border border-primary bg-black/40 text-base-content text-sm">
                         {m.name}
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             <div className="flex justify-center gap-3 mt-4">
-              <button className="btn btn-primary btn-sm font-jersey"
+              <button className="btn btn-primary flex-1 font-jersey text-xl tracking-wider"
                 onClick={() => setEditing(true)}>
                 Edit
               </button>
               <button
-                className="btn btn-error btn-sm font-jersey"
+                className="btn btn-error flex-1 font-jersey text-xl tracking-wider"
                 onClick={() => onDelete(rec.id)}
               >
                 Delete

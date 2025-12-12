@@ -5,7 +5,7 @@ function CategorySelector({ label, options, name, value, onChange }) {
     <div className="form-control">
       <label
         htmlFor="category"
-        className="label text-sm font-semibold text-accent m-3"
+        className="label text-sm font-semibold text-accent mb-1"
       >
         {label}
       </label>
@@ -14,7 +14,7 @@ function CategorySelector({ label, options, name, value, onChange }) {
         name={name}
         value={value}
         onChange={onChange}
-        className="select select-bordered border-primary focus:outline-none text-base-content"
+        className="select select-bordered w-full border-primary focus:outline-none text-base-content"
       >
         <option value="">Select a category</option>
         {options.map((opt, index) => (

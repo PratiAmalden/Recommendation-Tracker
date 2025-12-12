@@ -102,9 +102,27 @@ export function AuthProvider({ children }){
       }
     }
 
+    async function resetPassword(token, password) {
+        const res = await fetch(`${API}/reset-password`, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token, password }), // Send both the token and new password
+        });
+
+        if (!res.ok) {
+            const error = await res.json().catch(() => null);
+            throw new Error(error?.error || "Failed to reset password");
+        }
+        
+        
+        return res.json(); 
+    }
+
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, token, login, signUp,logOut }}>
+        <AuthContext.Provider value={{ user, isLoading, token, login, signUp,logOut,resetPassword }}>
             {children}
         </AuthContext.Provider>
     );

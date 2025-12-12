@@ -124,16 +124,23 @@ export default function RecommendationsList({
           </form>
         ) : (
           <>
-            <div className="w-full min-h-[4rem] flex items-start mb-2">
-              {rec.image_url && (
-                <img
-                  src={rec.image_url}
-                  alt={rec.item_name}
-                  className="w-full h-48 object-cover rounded-lg mb-3"
-                />
-              )}
+            <div className="flex flex-col items-center w-full mb-2">
+              <div className="w-full h-48 mb-3 overflow-hidden rounded-lg bg-black/20 border border-primary/20 flex items-center justify-center">
+                {rec.image_url ? (
+                    <img
+                      src={rec.image_url}
+                      alt={rec.item_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-accent/50">
+                      <span className="text-4xl mb-1">🦉</span> 
+                      <span className="text-xs font-jersey tracking-widest opacity-70">NO IMAGE</span>  
+                    </div>
+                )}
+              </div>
 
-              <h2 className="card-title text-primary font-jersey text-3xl line-clamp-2">
+              <h2 className="card-title text-primary font-jersey text-3xl line-clamp-2 text-center">
                 {rec.item_name}
               </h2>
             </div>

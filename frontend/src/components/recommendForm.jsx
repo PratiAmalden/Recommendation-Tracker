@@ -141,18 +141,20 @@ function RecommendationForm({ onSubmit, moodOptions, categories }) {
                 {error.moods && <p className="text-xs text-error mt-1 ml-1">{error.moods}</p>}
             </div>
 
-            <div>
+            <div className="form-control">
               <label 
-                htmlFor="recommender" 
-                className="label text-sm font-semibold text-accent m-3"
+                htmlFor="recoImg" 
+                className="label text-base font-semibold text-accent mb-1"
               >
                 Add cover image
               </label>       
               <input
               type="file"
+              id="recoImg"
               accept="image/png, image/jpeg"
               onChange={handleChange}
               name="recoImg"
+              className="file-input file-input-bordered file-input-primary w-full bg-black/40 h-12 leading-[2.8rem]"
               />
               {error.recoImg && (
                 <p className="text-xs text-error mt-1 ml-3">{error.recoImg}</p>

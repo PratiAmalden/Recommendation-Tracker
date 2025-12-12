@@ -13,9 +13,9 @@ export default function AddRecommendationPage() {
 
   const navigate = useNavigate();
 
-  const handleAddSubmit = async (formData) => {
+  const handleAddSubmit = async (formData, image) => {
     try {
-        await addRecommendation(formData);
+        await addRecommendation(formData, image);
         navigate('/recommendations'); 
     } catch (err) {
         console.error("Failed to add rec:", err);

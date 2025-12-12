@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategorySelector from "./CatgoryDropdown";
 import MoodSelector from "./MoodCheckbox";
 
@@ -11,6 +11,12 @@ export default function RecommendationsList({
 }) {
 
   const [editing, setEditing] = useState(false);
+  const [image, setImage] = useState(null)
+  const [imgPreview, setImgPreview] = useState(rec.image_url || null);
+
+  useEffect(() => {
+  setImgPreview(rec.image_url || null);
+  }, [rec.image_url]);
 
   const [form, setForm] = useState({
     item_name: rec.item_name,
@@ -21,6 +27,19 @@ export default function RecommendationsList({
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateImg = (e) => { 
+    const file = e.target.files[0] || null;
+    if(file){
+      const maxSize = 100 * 1024;
+        if(file.size > maxSize){
+          setImage(null);
+          return;
+        }
+    }
+    setImage(file);
+    setImgPreview(URL.createObjectURL(file));
   };
 
   const handleMoodChange = (e) => {
@@ -36,7 +55,7 @@ export default function RecommendationsList({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onEdit(rec.id, form);
+    onEdit(rec.id, form, image);
     setEditing(false);
   };
 
@@ -44,6 +63,16 @@ export default function RecommendationsList({
       <div className="card-body flex flex-col items-stretch text-center p-6 gap-3">
         {editing ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 flex-1">
+            <input
+              type="file"
+              accept="image/png, image/jpeg"
+              className="input input-bordered bg-black/40 border-primary text-base-content"
+              onChange={updateImg}
+              name="recoImg"
+            />
+            {imgPreview && (
+              <img src={imgPreview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+            )}
             <input
               className="input input-bordered bg-black/40 border-primary text-base-content"
               value={form.item_name}

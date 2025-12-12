@@ -116,8 +116,9 @@ export function AuthProvider({ children }){
             throw new Error(error?.error || "Failed to reset password");
         }
         
-        
         return res.json(); 
+    }
+    
     async function requestPasswordReset(email){
         const res = await fetch(`${API}/forgot-password`,{
             method: "POST",

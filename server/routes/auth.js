@@ -4,7 +4,6 @@ import db from "../db/db.js";
 import jwt from "jsonwebtoken";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { resetPasswordSchema } from "../utils/validationSchemas.js";
 import { authSchema, loginSchema, emailSchema } from "../utils/validationSchemas.js";
 import AWS from 'aws-sdk';
 

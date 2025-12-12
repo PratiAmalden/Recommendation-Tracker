@@ -36,10 +36,11 @@ export const resetPasswordSchema = z.object({
     .string()
     .min(1, "Please confirm your password."),
 
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match.",
-  path: ["confirmPassword"],
-//schema for forgot password 
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  //schema for forgot password 
+  });
 
 export const emailSchema = z.object({
   email:z

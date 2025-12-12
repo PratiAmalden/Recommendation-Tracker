@@ -132,18 +132,17 @@ export function useRecommendations() {
           body: imgFormData,
         });
 
-        if(!imgRes) throw new Error("Failed to uplaod the image");
+        if(!imgRes.ok) throw new Error("Failed to uplaod the image");
 
         const imgData = await imgRes.json();
         const url = imgData.image?.url || imgData.image?.file_path;
 
         if(url) {
-          created.image_url = url;
+          created.image_url = `${BASE_URL}${url}`;
         }
       }
 
       setItems((prev) => [created, ...prev]);
-      console.log(items)
       return created;
     } catch (err) {
       console.error(err.message);
@@ -152,7 +151,7 @@ export function useRecommendations() {
     }
   }
 
-  async function editRecommendation(id, newData) {
+  async function editRecommendation(id, newData, imageFile) {
     const res = await fetch(`${API}/recommendations/${id}`, {
       method: "PUT",
       headers: {
@@ -169,11 +168,32 @@ export function useRecommendations() {
 
     const result = await res.json();
 
+    if(imageFile){
+      const imgFormData = new FormData();
+      imgFormData.append("recoImg", imageFile);
+
+      const imgRes = await fetch(`${API}/recommendations/${id}/image`, {
+      method: "PUT",
+      body: imgFormData,
+    });
+
+    if (!imgRes.ok) {
+      throw new Error("Failed to update image");
+    }
+
+    const imgResult = await imgRes.json();
+    const url = imgResult.image?.url || imgResult.image?.file_path
+
+    if(url) {
+      result.image_url = `${BASE_URL}${url}`;
+    }
+    }
+
     setItems(prev =>
         prev.map((r) =>
-          r.id === id ? result : r 
+          r.id === id ? {...r, ...result} : r 
         )
-        );
+    );
   }
 
   async function deleteRecommendation(id) {

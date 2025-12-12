@@ -1,11 +1,19 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import db from "../db/db.js";
+import jwt from "jsonwebtoken";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { authSchema, loginSchema } from "../utils/validationSchemas.js";
+import { authSchema, loginSchema, emailSchema } from "../utils/validationSchemas.js";
+import AWS from 'aws-sdk';
+
 
 const router = Router();
+
+// AWS SES Configuration
+const ses = new AWS.SES({ 
+  region: process.env.AWS_REGION || 'eu-west-1' 
+ });
 
 // Current user endpoint used by checkAuth
 router.get("/me", authMiddleware, (req, res) => {
@@ -135,8 +143,133 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+router.post("/forgot-password", async (req, res) => {
+  const validation = emailSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    return res.status(400).json({ 
+      error: "Validation failed", 
+      details: validation.error.issues 
+    });
+  }
+
+  const { email } = validation.data;
+
+  try {
+    const userResult = await db.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (userResult.rows.length > 0) {
+      const user = userResult.rows[0];
+     
+      // Use a separate secret for resets if available, otherwise fallback to login secret
+      const secret = process.env.JWT_RESET_SECRET || process.env.JWT_SECRET_KEY;
+
+      const shortToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        secret,
+        { expiresIn: "15m" }
+      );
+
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      const resetUrl = `${frontendUrl}/reset-password?token=${shortToken}`;
+
+      // This log is for testing purposes to see the link in the terminal
+      console.log("Reset Link:", resetUrl);
+
+      const senderEmail = process.env.EMAIL_FROM || 'noreply@cyf.academy';
+
+      const params = {
+        Source: senderEmail, 
+        Destination: {
+          ToAddresses: [email],
+        },
+        Message: {
+          Subject: {
+            Data: 'Reset Your Password - Recommendation Tracker',
+          },
+          Body: {
+            Html: {
+              Data: `
+                <h2>Password Reset Request</h2>
+                <p>Click the link below to reset your password:</p>
+                <a href="${resetUrl}">Reset Password</a>
+                <p>This link will expire in 15 minutes.</p>
+              `,
+            },
+            Text: {
+              Data: `Click this link to reset your password: ${resetUrl}`,
+            },
+          },
+        },
+      };
+
+      try {
+          await ses.sendEmail(params).promise();
+          console.log("Email sent to AWS successfully.");
+      } catch (awsError) {
+          console.log("AWS Email Error (Expected if running locally):", awsError.message);
+      }
+    }
+
+    res.status(200).json({ message: "If an account exists for this email, a reset link has been sent." });
+
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+});
+
 router.post("/logout", authMiddleware, (req, res) => {
   return res.status(200).json({ message: "Logged out" });
+});
+
+// reset password
+router.post("/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+      return res.status(400).json({ error: "Token and new password are required." });
+  }
+  // Use the same secret used to sign the token in /forgot-password
+  const secret = process.env.JWT_RESET_SECRET || process.env.JWT_SECRET_KEY;
+
+  try {
+      //Verify the JWT and extract the payload (userId and email)
+      const payload = jwt.verify(token, secret);
+      const userId = payload.userId;
+
+      // Hash the new password before storing it
+      const newPasswordHash = await bcrypt.hash(password, 10);
+
+      // Update the user's password in the database
+      const updateResult = await db.query(
+          "UPDATE users SET password = $1 WHERE id = $2 RETURNING id",
+          [newPasswordHash, userId]
+      );
+
+      if (updateResult.rows.length === 0) {
+
+          return res.status(404).json({ error: "User not found or password already reset." });
+      }
+
+      
+      res.status(200).json({ message: "Password successfully reset. You can now log in." });
+
+  } catch (err) {
+      // Handle JWT verification failures (Expired, Invalid Signature)
+      if (err instanceof jwt.TokenExpiredError) {
+          return res.status(401).json({ error: "Password reset link has expired (15 minutes limit)." });
+      }
+      if (err instanceof jwt.JsonWebTokenError) {
+          return res.status(401).json({ error: "Invalid password reset token." });
+      }
+      
+      console.error("Reset password failed:", err);
+      res.status(500).json({ error: "Internal server error during password reset." });
+  }
 });
 
 export default router;

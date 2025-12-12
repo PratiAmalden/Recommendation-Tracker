@@ -13,7 +13,7 @@ export default function ForgotPasswordPage(){
 
     const {requestPasswordReset} = useAuth();
 
-    async function handleRquestReset(e){
+    async function handleRequestReset(e){
 
         e.preventDefault();
         setValidationError(null);
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage(){
             <p className="subtitle text-sm text-accent/80 mb-4">
                 Enter Your Email To Receive A Password Reset Link.
             </p>
-            <form onSubmit={handleRquestReset} className="space-y-4">
+            <form onSubmit={handleRequestReset} className="space-y-4">
                 <div className="form-field form-control">
                     <label htmlFor="email"
                        className="label text-sm font-semibold text-accent m-2  block ">

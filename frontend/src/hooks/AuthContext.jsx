@@ -106,7 +106,7 @@ export function AuthProvider({ children }){
         const res = await fetch(`${API}/forgot-password`,{
             method: "POST",
             headers:{
-                "content-Type" : "application/json",
+                "Content-Type" : "application/json",
             },
             body:JSON.stringify({email}),
         });

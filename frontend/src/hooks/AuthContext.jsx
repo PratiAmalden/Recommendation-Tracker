@@ -102,9 +102,20 @@ export function AuthProvider({ children }){
       }
     }
 
+    async function requestPasswordReset(email){
+        const res = await fetch(`${API}/forgot-password`,{
+            method: "POST",
+            headers:{
+                "Content-Type" : "application/json",
+            },
+            body:JSON.stringify({email}),
+        });
+        return res;
+    }
+
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, token, login, signUp,logOut }}>
+        <AuthContext.Provider value={{ user, isLoading, token, login, signUp,logOut,requestPasswordReset }}>
             {children}
         </AuthContext.Provider>
     );

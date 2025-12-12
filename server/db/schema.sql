@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS recommendation_moods;
 DROP TABLE IF EXISTS moods;
 DROP TABLE IF EXISTS recommendations;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS images;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -38,6 +39,15 @@ CREATE TABLE recommendation_moods (
     PRIMARY KEY (recommendation_id, mood_id)
 );
 
+CREATE TABLE images (
+    id SERIAL PRIMARY KEY,
+    recommendation_id INTEGER NOT NULL REFERENCES recommendations(id) ON DELETE CASCADE NOT NULL,
+    file_path TEXT NOT NULL,
+    mime_type VARCHAR(50) NOT NULL,
+    file_size INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+    UNIQUE (recommendation_id)
+);
 
 -- Insert moods
 INSERT INTO moods (name) VALUES ('Happy') ON CONFLICT (name) DO NOTHING;

@@ -3,8 +3,188 @@ import { createRecommendation, getRecommendationsByUserId } from '../models/reco
 import { authMiddleware } from '../middleware/authMiddleware.js'; 
 import db from '../db/db.js';
 import { recommendationSchema } from '../utils/validationSchemas.js'; 
+import multer from "multer";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from "fs";
+import crypto from "crypto";
 
 const router = express.Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const uploadDir = path.join(__dirname, ".." , "uploads");
+
+if(!fs.existsSync(uploadDir)){
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir)
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${crypto.randomUUID()}${ext}`)
+  }
+})
+
+function fileFilter (req, file, cb) {
+  const allowed = ["image/png", "image/jpeg"];
+
+  if (allowed.includes(file.mimetype)) return cb(null, true);
+  cb(null, false);
+}
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 100 * 1024 },
+  fileFilter,
+});
+
+router.post('/:id/image', upload.single('recoImg'), async (req, res) => {
+  const { id } = req.params;
+
+  if(!req.file){
+    return res.status(400).json({
+    success: false,
+    message: "No file uploaded",
+    });
+  }
+
+  try{
+    const filePath = `/uploads/${req.file.filename}`;
+    const mimeType = req.file.mimetype;
+    const fileSize = req.file.size;
+
+    const result = await db.query(
+      `INSERT INTO images (recommendation_id, file_path, mime_type, file_size)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, file_path`,
+      [id, filePath, mimeType, fileSize]
+    );
+    
+    const image = result.rows[0];
+
+    return res.status(201).json({
+      success: true,
+      message: "Image uploaded successfully",
+      image: {
+        imgId: image.id,
+        url: image.file_path,
+      },
+    });
+  } catch (err) {
+    console.error('Error uploading image', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+
+})
+
+router.get("/:id/image", async (req, res) => {
+  const id = req.params;
+
+  try{
+    const result = await db.query(
+    `SELECT id, file_path, mime_type, file_size
+    FROM images
+    WHERE recommendation_id = $1`, [id]
+    );
+
+    if(result.rows.length === 0) return res.status(400).json({
+      success: false,
+      message: "Image not found"
+    });
+
+    const image = result.rows[0]
+    res.json({
+      success: true,
+      message: "image uploaded",
+      image: {
+        imgId: image.id,
+        url: image.file_path
+      }
+    });
+  } catch (err){
+    console.error('Error fetching image', err);
+    return res.status(500).json({ success: false });
+  }
+  
+})
+
+router.put('/:id/image', upload.single('recoImg'), async (req, res) => {
+  const { id } = req.params;
+  const newFile = req.file;
+
+  if(!newFile){
+    return res.status(400).json({
+    success: false,
+    message: "No file uploaded",
+    });
+  }
+
+  const newFilePath = `/uploads/${newFile?.filename}`;
+
+  try{
+    const img = await db.query(
+      "SELECT file_path FROM images WHERE recommendation_id = $1",
+      [id]
+    )
+
+    const oldImgPath = img.rows[0]?.file_path || null;
+
+    let result;
+    if(oldImgPath) {
+      result = await db.query(
+        `UPDATE images
+        SET file_path = $1,
+          mime_type = $2,
+          file_size = $3
+        WHERE recommendation_id = $4
+        RETURNING id, file_path`,
+        [newFilePath, newFile.mimetype, newFile.size , id]
+      );
+    } else {
+      result = await db.query(
+        `INSERT INTO images (recommendation_id, file_path, mime_type, file_size)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, file_path`,
+        [id, newFilePath, newFile.mimetype, newFile.size]
+      );
+    }
+
+    if(oldImgPath){
+      const oldFilename = path.basename(oldImgPath);
+      const oldPath = path.join(__dirname, "..", "uploads", oldFilename);
+      try {
+        await fs.promises.unlink(oldPath);
+      } catch (err) {
+        console.error(`Failed to delete file ${oldPath}`, err);
+      }
+    }
+
+    const newImg = result.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      message: "Image updated successfully",
+      image: {
+        imgId: newImg.id,
+        url: newImg.file_path,
+      }
+    });
+  } catch(err){
+    console.error('Error editing image', err);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+})
 
 // POST /api/recommendations route
 router.post('/', authMiddleware, async(req, res) => {
@@ -171,6 +351,14 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   const user_id = req.user.userId;
   const { id } = req.params;
   try{
+    const img = await db.query(
+      "SELECT file_path FROM images WHERE recommendation_id = $1",
+      [id]
+    );
+
+    const imgPath = img.rows[0]?.file_path;
+    const filename = imgPath ? path.basename(imgPath) : null;
+
     await db.query("DELETE FROM recommendations WHERE id = $1 AND user_id = $2",
     [id, user_id]);
 
@@ -178,6 +366,16 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       'DELETE FROM recommendation_moods WHERE recommendation_id = $1',
       [id]
     )
+
+    await db.query(
+      'DELETE FROM images WHERE recommendation_id = $1',
+      [id]
+    );
+
+    if(filename){
+      const fullPath = path.join(__dirname, "..", "uploads", filename);
+      fs.promises.unlink(fullPath);
+    }
 
     res.status(200).json({
       success: true,
@@ -187,7 +385,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   } catch (err){
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch recommendations.',
+      message: 'Failed to delete the recommendation.',
       error: err.message,
     });
   }

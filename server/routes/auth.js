@@ -1,9 +1,11 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import db from "../db/db.js";
+import jwt from "jsonwebtoken";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { authSchema, loginSchema } from "../utils/validationSchemas.js";
+import { resetPasswordSchema } from "../utils/validationSchemas.js";
 
 const router = Router();
 
@@ -137,6 +139,52 @@ router.post("/signup", async (req, res) => {
 
 router.post("/logout", authMiddleware, (req, res) => {
   return res.status(200).json({ message: "Logged out" });
+});
+
+// reset password
+router.post("/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+      return res.status(400).json({ error: "Token and new password are required." });
+  }
+  // Use the same secret used to sign the token in /forgot-password
+  const secret = process.env.JWT_RESET_SECRET || process.env.JWT_SECRET_KEY;
+
+  try {
+      //Verify the JWT and extract the payload (userId and email)
+      const payload = jwt.verify(token, secret);
+      const userId = payload.userId;
+
+      // Hash the new password before storing it
+      const newPasswordHash = await bcrypt.hash(password, 10);
+
+      // Update the user's password in the database
+      const updateResult = await db.query(
+          "UPDATE users SET password = $1 WHERE id = $2 RETURNING id",
+          [newPasswordHash, userId]
+      );
+
+      if (updateResult.rows.length === 0) {
+
+          return res.status(404).json({ error: "User not found or password already reset." });
+      }
+
+      
+      res.status(200).json({ message: "Password successfully reset. You can now log in." });
+
+  } catch (err) {
+      // Handle JWT verification failures (Expired, Invalid Signature)
+      if (err instanceof jwt.TokenExpiredError) {
+          return res.status(401).json({ error: "Password reset link has expired (15 minutes limit)." });
+      }
+      if (err instanceof jwt.JsonWebTokenError) {
+          return res.status(401).json({ error: "Invalid password reset token." });
+      }
+      
+      console.error("Reset password failed:", err);
+      res.status(500).json({ error: "Internal server error during password reset." });
+  }
 });
 
 export default router;

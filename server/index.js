@@ -4,9 +4,15 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import recommendationsRouter from './routes/recommendations.js';
 import moodsRouter from './routes/moods.js';
+import path from "path";
+import { fileURLToPath } from "url";
+
 dotenv.config();
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Root route to check if server is running
 app.get('/', (req, res) => {
@@ -27,6 +33,8 @@ app.use(express.json());
 
 // Mount the recommendation routes under the '/api/recommendations' path
 app.use('/api/recommendations', recommendationsRouter);
+
+app.use('/uploads', express.static(path.join(__dirname, "uploads")))
 
 app.use('/api/moods', moodsRouter);
 

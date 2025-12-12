@@ -39,6 +39,13 @@ export const resetPasswordSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
+//schema for forgot password 
+
+export const emailSchema = z.object({
+  email:z
+  .string()
+  .trim()
+  .email("Please Enter a valid Email Address"),
 });
 
 const categoryOptions = ["Movie", "Book", "TV show", "Others"];

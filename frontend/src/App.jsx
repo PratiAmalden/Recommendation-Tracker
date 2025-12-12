@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import RecommendationPage from './components/RecomendationPage'; 
 import AddRecommendationPage from './components/AddRecommendationPage';
 import ResetPasswordPage from "./components/ResetPasswordPage";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
 
 function HomePage() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route
                 path="/add-recommendation"
                 element={<AddRecommendationPage />}

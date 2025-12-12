@@ -16,6 +16,15 @@ export const loginSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
+//schema for forgot password 
+
+export const emailSchema = z.object({
+  email:z
+  .string()
+  .trim()
+  .email("Please Enter a valid Email Address"),
+});
+
 export const authSchema = loginSchema.extend({
   email: z
     .string()

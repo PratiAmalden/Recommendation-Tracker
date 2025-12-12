@@ -86,7 +86,7 @@ router.post('/:id/image', upload.single('recoImg'), async (req, res) => {
 })
 
 router.get("/:id/image", async (req, res) => {
-  const id = req.params;
+  const { id }= req.params;
 
   try{
     const result = await db.query(

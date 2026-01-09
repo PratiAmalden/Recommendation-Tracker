@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 
-export default function RecommendationFilter({filters,onFilterChange}){
+export default function RecommendationFilter({filters, onFilterChange, moodOptions = []}){
 
     const [category,setCategory] = useState("");
     const [mood,setMood] = useState("");
@@ -57,10 +57,13 @@ export default function RecommendationFilter({filters,onFilterChange}){
                                     value = {mood}
                                     onChange = {(e)=> setMood(e.target.value)}>
                                 <option value="">All Moods</option>
-                                <option value="1">Happy</option>
-                                <option value="2">Sad</option>
-                                <option value="3">Excited</option>
-                                <option value="4">Calm</option>
+
+                                {moodOptions && moodOptions.map((m) => (
+                                    <option key={m.id} value={m.id}>
+                                        {m.label}
+                                    </option>
+                                ))}
+                                
                             </select>
                         </div>
 

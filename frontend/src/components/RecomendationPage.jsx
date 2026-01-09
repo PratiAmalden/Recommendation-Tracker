@@ -55,6 +55,7 @@ export default function RecommendationPage() {
         <RecommendationFilter 
            filters={filters} 
            onFilterChange={setFilters} 
+           moodOptions={moodOptions}
         />
       </div>
 

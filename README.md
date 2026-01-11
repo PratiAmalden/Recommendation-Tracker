@@ -13,6 +13,10 @@ You can explore the live application without signing up by using the demo creden
 
 > Note: The demo account is shared between users, so data may change or be reset.
 
+## Demo Preview
+
+![Recommendation Tracker Demo](assets/demo.gif)
+
 
 ## About the Project
 
@@ -60,6 +64,8 @@ This project was built as part of the **CodeYourFuture** course by a team of 3 d
 ## Project Structure
 ```
 Recommendation-Tracker/
+├── assets/
+│   └── demo.gif
 ├── frontend/
 │   ├── src/
 │   │   ├── components/     # React components

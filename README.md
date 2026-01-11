@@ -4,6 +4,15 @@
 
 [Live Demo](https://recommendation-tracker.ui.hosting.codeyourfuture.io/) | [Backend API](https://recommendation-tracker.hosting.codeyourfuture.io/)
 
+## Demo Account
+
+You can explore the live application without signing up by using the demo credentials below:
+
+- **Username:** demo-user  
+- **Password:** Demo1234  
+
+> Note: The demo account is shared between users, so data may change or be reset.
+
 
 ## About the Project
 

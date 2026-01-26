@@ -1,5 +1,5 @@
-import RecommendationsList from "./RecoList";
-import RecommendationFilter from "./FilterDropdown";
+import RecommendationsList from "../components/RecoList";
+import RecommendationFilter from "../components/FilterDropdown";
 import { useRecommendations } from "../hooks/useRecommendations";
 import { useNavigate } from "react-router-dom";
 

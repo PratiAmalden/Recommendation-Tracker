@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../hooks/AuthContext";
+import { useAuth } from "./AuthContext";
 import {useLocation} from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_API_URL;

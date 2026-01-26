@@ -1,5 +1,3 @@
-import React from "react";
-
 function CategorySelector({ label, options, name, value, onChange }) {
   return (
     <div className="form-control">

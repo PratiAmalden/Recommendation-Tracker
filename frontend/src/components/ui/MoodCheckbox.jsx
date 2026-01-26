@@ -1,5 +1,3 @@
-import React from "react";
-
 function MoodSelector({ label, name, value, options, onChange }) {
   return (
     <fieldset className="form-control">

@@ -1,0 +1,13 @@
+{
+    "workbench.colorCustomizations": {
+        "terminalCursor.foreground": "#A6E3A1",
+        "terminal.ansiBlack": "#45475A",
+        "terminal.ansiRed": "#F38BA8",
+        "terminal.ansiGreen": "#3c7b36",
+        "terminal.ansiYellow": "#ffb413",
+        "terminal.ansiBlue": "#516a93",
+        "terminal.ansiMagenta": "#F5C2E7",
+        "terminal.ansiCyan": "#07f1ca",
+        "terminal.ansiWhite": "#1245fe"
+    }
+}

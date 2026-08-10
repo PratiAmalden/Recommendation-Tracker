@@ -5,15 +5,14 @@ import jwt from "jsonwebtoken";
 import { createToken } from "../utils/createToken.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { authSchema, loginSchema, emailSchema } from "../utils/validationSchemas.js";
-import AWS from 'aws-sdk';
-
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 const router = Router();
 
 // AWS SES Configuration
-const ses = new AWS.SES({ 
-  region: process.env.AWS_REGION || 'eu-west-1' 
- });
+const ses = new SESClient({
+  region: process.env.AWS_REGION || "eu-west-1",
+});
 
 // Current user endpoint used by checkAuth
 router.get("/me", authMiddleware, (req, res) => {
@@ -207,7 +206,7 @@ router.post("/forgot-password", async (req, res) => {
       };
 
       try {
-          await ses.sendEmail(params).promise();
+          await ses.send(new SendEmailCommand(params));
           console.log("Email sent to AWS successfully.");
       } catch (awsError) {
           console.log("AWS Email Error (Expected if running locally):", awsError.message);

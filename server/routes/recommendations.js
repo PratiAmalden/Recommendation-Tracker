@@ -85,37 +85,6 @@ router.post('/:id/image', upload.single('recoImg'), async (req, res) => {
 
 })
 
-router.get("/:id/image", async (req, res) => {
-  const { id }= req.params;
-
-  try{
-    const result = await db.query(
-    `SELECT id, file_path, mime_type, file_size
-    FROM images
-    WHERE recommendation_id = $1`, [id]
-    );
-
-    if(result.rows.length === 0) return res.status(400).json({
-      success: false,
-      message: "Image not found"
-    });
-
-    const image = result.rows[0]
-    res.json({
-      success: true,
-      message: "image uploaded",
-      image: {
-        imgId: image.id,
-        url: image.file_path
-      }
-    });
-  } catch (err){
-    console.error('Error fetching image', err);
-    return res.status(500).json({ success: false });
-  }
-  
-})
-
 router.put('/:id/image', upload.single('recoImg'), async (req, res) => {
   const { id } = req.params;
   const newFile = req.file;

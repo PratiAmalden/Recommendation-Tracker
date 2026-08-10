@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import CategorySelector from './CatgoryDropdown';
 import MoodSelector from './MoodCheckbox';
-import { recommendationSchema, zodToFieldErrors } from '../utils/validationSchemas'; 
+import { recommendationSchema, zodToFieldErrors } from '../../utils/validationSchemas'; 
 
 function RecommendationForm({ onSubmit, moodOptions, categories }) {
 

@@ -1,5 +1,5 @@
 import { useRecommendations } from '../hooks/useRecommendations';
-import RecommendationForm from '../components/recommendForm';
+import RecommendationForm from '../components/forms/RecommendForm';
 import { useNavigate } from 'react-router-dom';
 
 export default function AddRecommendationPage() {

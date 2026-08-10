@@ -1,4 +1,4 @@
-import { useAuth } from "../../hooks/AuthContext";
+import { useAuth } from "../hooks/AuthContext";
 
 export default function Profile() {
   const { user, logOut } = useAuth();

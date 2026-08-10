@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import CategorySelector from "./CatgoryDropdown";
-import MoodSelector from "./MoodCheckbox";
+import CategorySelector from "../components/ui/CategoryDropdown";
+import MoodSelector from "../components/ui/MoodCheckbox";
 
 export default function RecommendationsList({
   rec,

@@ -5,14 +5,14 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import LoginPage from "./components/LoginPage";
-import SignupPage from "./components/SignupPage";
-import Profile from "./components/profile";
-import Navbar from "./components/Navbar";
-import RecommendationPage from './components/RecomendationPage'; 
-import AddRecommendationPage from './components/AddRecommendationPage';
-import ResetPasswordPage from "./components/ResetPasswordPage";
-import ForgotPasswordPage from "./components/ForgotPasswordPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import Profile from "./pages/profile";
+import Navbar from "./components/ui/Navbar";
+import RecommendationPage from './pages/RecommendationPage'; 
+import AddRecommendationPage from './pages/AddRecommendationPage';
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function HomePage() {
   return (

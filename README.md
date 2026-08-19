@@ -2,7 +2,7 @@
 
 **Pin the Mood & Never Forget a Recommendation Again!**
 
-[Live Demo](https://recommendation-tracker.ui.hosting.codeyourfuture.io/) | [Backend API](https://recommendation-tracker.hosting.codeyourfuture.io/)
+[Live Demo](https://recommendation-tracker-ui.grads.hosting.cyf.academy/) | [Backend API](https://recommendation-tracker.grads.hosting.cyf.academy/)
 
 ## Demo Account
 

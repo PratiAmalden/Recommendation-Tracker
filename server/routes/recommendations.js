@@ -239,6 +239,42 @@ router.get('/', authMiddleware, async (req, res) => {
 
 });
 
+router.put('/:id/completion', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.user.userId;
+  const { rating = null, review = "" } = req.body || {};
+
+  if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 5)) {
+    return res.status(400).json({ success: false, message: "Rating must be between 1 and 5" });
+  }
+
+  if (typeof review !== "string") {
+    return res.status(400).json({ success: false, message: "Review must be text" });
+  }
+
+  try {
+    const result = await db.query(
+      `UPDATE recommendations
+       SET status = 'completed', rating = $1, review = $2, completed_at = now(), updated_at = now()
+       WHERE id = $3 AND user_id = $4
+       RETURNING id, status, rating, review, completed_at, updated_at`,
+      [rating, review.trim() || null, id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Recommendation not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error completing recommendation", error);
+    return res.status(500).json({ success: false, message: "Failed to complete recommendation" });
+  }
+});
+
 router.put('/:id', authMiddleware , async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.userId;

@@ -1,4 +1,4 @@
-import RecommendationsList from "./RecoList";
+import RecommendationCard from "../components/ui/RecommendationCard";
 import RecommendationFilter from "../components/ui/FilterDropdown";
 import { useRecommendations } from "../hooks/useRecommendations";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ export default function RecommendationPage() {
     moodOptions,
     categories,
     editRecommendation,
+    completeRecommendation,
     deleteRecommendation,
     filters,
     setFilters
@@ -45,6 +46,10 @@ export default function RecommendationPage() {
     );
   }
 
+  // Filter items into active and completed lists
+  const activeItems = items.filter((r) => r.status !== "completed");
+  const completedItems = items.filter((r) => r.status === "completed");
+
   return (
     <div className="min-h-[70vh]">
       <h1 className="font-jersey text-4xl text-primary tracking-[0.15em] mb-6">
@@ -65,22 +70,56 @@ export default function RecommendationPage() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
-        {items.map((r) => (
-          <div
-            key={r.id}
-            className="card h-full bg-neutral border border-primary shadow-xl flex flex-col"
-          >
-            <RecommendationsList
-              rec={r}
-              onEdit={editRecommendation}
-              onDelete={deleteRecommendation}
-              moodOptions={moodOptions}
-              categories={categories}
-            />
+      {/* Active Recommendations Grid */}
+      {activeItems.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+          {activeItems.map((r) => (
+            <div
+              key={r.id}
+              className="card h-full bg-neutral border border-primary shadow-xl flex flex-col"
+            >
+              <RecommendationCard
+                rec={r}
+                onEdit={editRecommendation}
+                onComplete={completeRecommendation}
+                onDelete={deleteRecommendation}
+                moodOptions={moodOptions}
+                categories={categories}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Completed Recommendations Section */}
+      {completedItems.length > 0 && (
+        <div className="mt-12">
+          <div className="flex items-center gap-4 mb-6">
+            <h2 className="font-jersey text-3xl text-accent tracking-[0.15em]">
+              Completed
+            </h2>
+            <div className="flex-1 border-b border-primary/30" />
           </div>
-        ))}
-      </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch opacity-85">
+            {completedItems.map((r) => (
+              <div
+                key={r.id}
+                className="card h-full bg-neutral border border-primary/50 shadow-xl flex flex-col"
+              >
+                <RecommendationCard
+                  rec={r}
+                  onEdit={editRecommendation}
+                  onComplete={completeRecommendation}
+                  onDelete={deleteRecommendation}
+                  moodOptions={moodOptions}
+                  categories={categories}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button
         className="btn btn-outline border-primary text-accent hover:bg-primary hover:text-black font-jersey text-xl mt-6"

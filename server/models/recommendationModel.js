@@ -91,18 +91,23 @@ export async function getRecommendationsByUserId(userId, filters = {}) {
         r.recommender,
         r.user_id,
         r.status,
+        r.rating,
+        r.review,
+        r.completed_at,
         r.created_at,
         r.updated_at,
         i.file_path AS image_url,
-        COALESCE(JSON_AGG(json_build_object('id', m.id, 'name', m.name)) FILTER (WHERE m.id IS NOT NULL), '[]') AS moods
-      FROM
-        recommendations r
-      LEFT JOIN
-        recommendation_moods rm ON r.id = rm.recommendation_id
-      LEFT JOIN
-        moods m ON rm.mood_id = m.id
-      LEFT JOIN
-        images i ON i.recommendation_id = r.id
+        COALESCE(
+          (
+            SELECT JSON_AGG(json_build_object('id', m.id, 'name', m.name))
+            FROM recommendation_moods rm
+            JOIN moods m ON m.id = rm.mood_id
+            WHERE rm.recommendation_id = r.id
+          ),
+          '[]'::json
+        ) AS moods
+      FROM recommendations r
+      LEFT JOIN images i ON i.recommendation_id = r.id
     `;
 
     // $1 will always be the userId
@@ -138,13 +143,7 @@ export async function getRecommendationsByUserId(userId, filters = {}) {
       query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    // Grouping and Ordering
-    query += `
-      GROUP BY
-        r.id, r.item_name, r.category, r.recommender, r.user_id, r.status, r.created_at, r.updated_at, i.file_path
-      ORDER BY
-        r.created_at DESC;
-    `;
+    query += ` ORDER BY r.created_at DESC;`;
 
     // $1 will be replaced by the userId value
     const result = await client.query(query, values);

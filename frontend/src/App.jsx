@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -13,6 +14,7 @@ import RecommendationPage from './pages/RecommendationPage';
 import AddRecommendationPage from './pages/AddRecommendationPage';
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import SharedRecommendationPage from "./pages/SharedRecommendationPage";
 
 function HomePage() {
   return (
@@ -30,14 +32,16 @@ function HomePage() {
   );
 }
 
-export default function App() {
+function AppRoutes() {
+  const location = useLocation();
+  const isSharedPage = location.pathname.startsWith("/share/");
+
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-base-100 text-base-content">
-          <Navbar />
-          <div className="app-container max-w-5xl mx-auto px-4 py-8">
-            <Routes>
+    <div className="min-h-screen bg-base-100 text-base-content">
+      {!isSharedPage && <Navbar />}
+      <div className={isSharedPage ? "" : "app-container max-w-5xl mx-auto px-4 py-8"}>
+        <Routes>
+              <Route path="/share/:shareToken" element={<SharedRecommendationPage />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
@@ -50,9 +54,17 @@ export default function App() {
               />
               <Route path="/recommendations" element={<RecommendationPage />} />
               <Route path="*" element={<Navigate to={"/login"} replace />} />
-            </Routes>
-          </div>
-        </div>
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
       </Router>
     </AuthProvider>
   );

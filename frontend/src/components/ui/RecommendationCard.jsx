@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CompletionForm from "../forms/completionForm";
 import EditForm from "../forms/EditRecommendationForm";
+import ShareRecommendation from "./ShareRecommendation";
 
 export default function RecommendationCard({
   rec,
@@ -8,11 +9,13 @@ export default function RecommendationCard({
   moodOptions,
   onDelete,
   onComplete,
+  onCreateShare,
   categories,
 }) {
 
   const [editing, setEditing] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   
   return (
@@ -30,6 +33,17 @@ export default function RecommendationCard({
           />
         ) : (
           <>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                aria-label={`Share ${rec.item_name}`}
+                title="Share recommendation"
+                className="btn btn-ghost btn-sm text-accent hover:text-primary"
+                onClick={() => setSharing(true)}
+              >
+               <i class="bi bi-share-fill"></i>
+              </button>
+            </div>
             <div className="flex flex-col items-center w-full mb-2">
               <div className="w-full h-48 mb-3 overflow-hidden rounded-lg bg-black/20 border border-primary/20 flex items-center justify-center">
                 {rec.image_url ? (
@@ -133,6 +147,13 @@ export default function RecommendationCard({
                 initialReview={rec.review || ""}
                 onClose={() => setCompleting(false)}
                 onComplete={(completionData) => onComplete(rec.id, completionData)}
+              />
+            )}
+            {sharing && (
+              <ShareRecommendation
+                itemName={rec.item_name}
+                onCreateShare={() => onCreateShare(rec.id)}
+                onClose={() => setSharing(false)}
               />
             )}
           </>

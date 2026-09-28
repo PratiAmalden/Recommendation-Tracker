@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import recommendationsRouter from './routes/recommendations.js';
+import sharedRecommendationsRouter from './routes/sharedRecommendations.js';
 import moodsRouter from './routes/moods.js';
 import path from "path";
 import { fileURLToPath } from "url";
@@ -44,6 +45,7 @@ app.use(express.json());
 
 // Mount the recommendation routes under the '/api/recommendations' path
 app.use('/api/recommendations', recommendationsRouter);
+app.use('/api/shared/recommendations', sharedRecommendationsRouter);
 
 app.use('/uploads', express.static(path.join(__dirname, "uploads")))
 

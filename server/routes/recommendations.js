@@ -1,5 +1,5 @@
 import express from 'express';
-import { createRecommendation, getRecommendationsByUserId } from '../models/recommendationModel.js';
+import { createRecommendation, createShareToken, getRecommendationsByUserId } from '../models/recommendationModel.js';
 import { authMiddleware } from '../middleware/authMiddleware.js'; 
 import db from '../db/db.js';
 import { recommendationSchema } from '../utils/validationSchemas.js'; 
@@ -237,6 +237,35 @@ router.get('/', authMiddleware, async (req, res) => {
     });
   }
 
+});
+
+router.post('/:id/share', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+  const token = crypto.randomBytes(24).toString('hex');
+
+  try {
+    const shareToken = await createShareToken(id, userId, token);
+
+    if (!shareToken) {
+      return res.status(404).json({
+        success: false,
+        message: 'Recommendation not found',
+      });
+    }
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    return res.status(200).json({
+      success: true,
+      shareUrl: `${frontendUrl}/share/${shareToken}`,
+    });
+  } catch (error) {
+    console.error('Error creating recommendation share link', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create share link',
+    });
+  }
 });
 
 router.put('/:id/completion', authMiddleware, async (req, res) => {

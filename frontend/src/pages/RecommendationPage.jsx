@@ -13,6 +13,7 @@ export default function RecommendationPage() {
     categories,
     editRecommendation,
     completeRecommendation,
+    createShareLink,
     deleteRecommendation,
     filters,
     setFilters
@@ -47,7 +48,7 @@ export default function RecommendationPage() {
   }
 
   // Filter items into active and completed lists
-  const activeItems = items.filter((r) => r.status !== "completed");
+  const activeItems = items.filter((r) => r.status == "pending");
   const completedItems = items.filter((r) => r.status === "completed");
 
   return (
@@ -82,6 +83,7 @@ export default function RecommendationPage() {
                 rec={r}
                 onEdit={editRecommendation}
                 onComplete={completeRecommendation}
+                onCreateShare={createShareLink}
                 onDelete={deleteRecommendation}
                 moodOptions={moodOptions}
                 categories={categories}
@@ -111,6 +113,7 @@ export default function RecommendationPage() {
                   rec={r}
                   onEdit={editRecommendation}
                   onComplete={completeRecommendation}
+                  onCreateShare={createShareLink}
                   onDelete={deleteRecommendation}
                   moodOptions={moodOptions}
                   categories={categories}

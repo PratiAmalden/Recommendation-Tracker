@@ -160,3 +160,43 @@ export async function getRecommendationsByUserId(userId, filters = {}) {
   }
   
 }
+
+export async function createShareToken(recommendationId, userId, token) {
+  const result = await db.query(
+    `UPDATE recommendations
+     SET share_token = COALESCE(share_token, $1), updated_at = now()
+     WHERE id = $2 AND user_id = $3
+     RETURNING share_token`,
+    [token, recommendationId, userId]
+  );
+
+  return result.rows[0]?.share_token || null;
+}
+
+export async function getSharedRecommendation(shareToken) {
+  const result = await db.query(
+    `SELECT
+       r.item_name,
+       r.category,
+       r.recommender,
+       r.status,
+       CASE WHEN r.status = 'completed' THEN r.rating END AS rating,
+       CASE WHEN r.status = 'completed' THEN r.review END AS review,
+       i.file_path AS image_url,
+       COALESCE(
+         (
+           SELECT JSON_AGG(m.name ORDER BY m.name)
+           FROM recommendation_moods rm
+           JOIN moods m ON m.id = rm.mood_id
+           WHERE rm.recommendation_id = r.id
+         ),
+         '[]'::json
+       ) AS moods
+     FROM recommendations r
+     LEFT JOIN images i ON i.recommendation_id = r.id
+     WHERE r.share_token = $1`,
+    [shareToken]
+  );
+
+  return result.rows[0] || null;
+}

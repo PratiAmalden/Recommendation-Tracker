@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CompletionForm from "../forms/completionForm";
+import CompletionForm from "../forms/CompletionForm";
 import EditForm from "../forms/EditRecommendationForm";
 import ShareRecommendation from "./ShareRecommendation";
 
@@ -41,7 +41,7 @@ export default function RecommendationCard({
                 className="btn btn-ghost btn-sm text-accent hover:text-primary"
                 onClick={() => setSharing(true)}
               >
-               <i class="bi bi-share-fill"></i>
+               <i className="bi bi-share-fill"></i>
               </button>
             </div>
             <div className="flex flex-col items-center w-full mb-2">

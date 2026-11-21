@@ -53,6 +53,17 @@ app.use('/api/moods', moodsRouter);
 
 app.use("/api/auth", authRoutes);
 
+app.get('/health', (req, res) => {
+  res.sendStatus(200);
+});
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Not found',
+  });
+});
+
 app.listen(port, () => {
   console.log("App listening on: ", port);
 });

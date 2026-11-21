@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import {useLocation} from "react-router-dom";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env?.VITE_API_URL || "";
 const API = `${BASE_URL}/api`;
 
 export function useRecommendations() {
@@ -196,6 +196,43 @@ export function useRecommendations() {
     );
   }
 
+  async function completeRecommendation(id, completionData) {
+    const res = await fetch(`${API}/recommendations/${id}/completion`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(completionData),
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.message || "Failed to complete recommendation");
+    }
+
+    const completed = result.data || result;
+    setItems((prev) => prev.map((item) => item.id === id ? { ...item, ...completed } : item));
+    return completed;
+  }
+
+  async function createShareLink(id) {
+    const res = await fetch(`${API}/recommendations/${id}/share`, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.message || "Failed to create share link");
+    }
+
+    return result.shareUrl;
+  }
+
   async function deleteRecommendation(id) {
     setItems((prev) => prev.filter((r) => r.id !== id));
 
@@ -218,6 +255,8 @@ export function useRecommendations() {
     categories,
     addRecommendation,
     editRecommendation,
+    completeRecommendation,
+    createShareLink,
     deleteRecommendation,
     reload: loadRecommendations,
     filters,

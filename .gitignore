@@ -7,4 +7,6 @@ uploads/*.jpg
 # do NOT ignore test.txt
 
 # exception to the rule
-!server/uploads/.gitkeep 
+!server/uploads/.gitkeep
+.neon
+.env.local

@@ -26,11 +26,7 @@ CREATE TABLE recommendations (
     category TEXT NOT NULL,
     recommender TEXT,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE NOT NULL,
-    share_token TEXT UNIQUE,
-    status TEXT DEFAULT 'pending' NOT NULL,
-    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-    review TEXT,
-    completed_at TIMESTAMPTZ,
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     UNIQUE (item_name, category, user_id)

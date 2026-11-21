@@ -1,26 +1,17 @@
 import dotenv from 'dotenv';
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+dotenv.config(); // Load environment variables
+
 import { Pool } from "pg";
 
-const serverDirectory = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({
-  path: [
-    path.resolve(serverDirectory, "../../.env.local"),
-    path.resolve(serverDirectory, "../.env"),
-  ],
+// Create PostgreSQL connection pool
+const db = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
-
-const db = process.env.DATABASE_URL
-  ? new Pool({ connectionString: process.env.DATABASE_URL })
-  : new Pool({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      database: process.env.DB_DATABASE,
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-    });
 
 // Test database connection
 async function testDbConnection() {

@@ -17,6 +17,11 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Root route to check if server is running
+app.get('/', (req, res) => {
+  res.send('Recommendation Tracker API is up and running!');
+});
+
 app.get('/test-persistence', (req, res) => {
   const testPath = path.join(__dirname, 'uploads', 'test.txt');
   if (fs.existsSync(testPath)) {
@@ -52,14 +57,11 @@ app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
 
-const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
-app.use(express.static(frontendDistPath));
-app.get(/.*/, (req, res, next) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
-    return next();
-  }
-
-  res.sendFile(path.join(frontendDistPath, 'index.html'));
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Not found',
+  });
 });
 
 app.listen(port, () => {
